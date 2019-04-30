@@ -20,11 +20,11 @@ class setOutputTree {
   int lumi;
   int nPV;
   int issignal;
-  int issignal_PuppiAK8;
-  int issignal_AK4jetjet;
-  int issignal_PuppiAK4jetjet;
+//  int issignal_PuppiAK8;
+//  int issignal_AK4jetjet;
+//  int issignal_PuppiAK4jetjet;
   int isVBF;
-  int isPuppiVBF;
+ // int isPuppiVBF;
   float wSampleWeight;
   float genWeight;
   float top1_NNLO_Weight;
@@ -33,14 +33,14 @@ class setOutputTree {
   float trig_eff_Weight2;
   float id_eff_Weight;
   float id_eff_Weight2;
-  float gen_top1_pt;
-  float gen_top2_pt;
-  float totalEventWeight;
-  float totalEventWeight_2;
-  float totalEventWeight_3;
+ // float gen_top1_pt;
+ // float gen_top2_pt;
+ // float totalEventWeight;
+ // float totalEventWeight_2;
+ // float totalEventWeight_3;
 
   float totalEventWeight_2Lep;
-  float PtBalance_type0_jes_up;
+ /* float PtBalance_type0_jes_up;
   float PtBalance_type0_jes_dn;
   float PtBalance_type0_jer_up;
   float PtBalance_type0_jer_dn;
@@ -57,21 +57,21 @@ class setOutputTree {
   float BosonCentrality_2Lep_jes_up;
   float BosonCentrality_2Lep_jes_dn;
   float ZeppenfeldWL_2Lep_jes_up;
-  float ZeppenfeldWL_2Lep_jes_dn;
+  float ZeppenfeldWL_2Lep_jes_dn;*/
 
   float pu_Weight;
   float pu_Weight_up;
   float pu_Weight_down;
-  float pfMET;
+/*  float pfMET;
   float pfMET_jes_up;
   float pfMET_jes_dn;
-  float pfMET_Phi;
+  float pfMET_Phi;*/
   float pfMET_Corr; 
   float pfMET_Corr_phi; 
-  float pfMET_Corr_Cov00; 
-  float pfMET_Corr_Cov01; 
-  float pfMET_Corr_Cov11; 
-  float pfMET_Corr_jerup; 
+ // float pfMET_Corr_Cov00; 
+//  float pfMET_Corr_Cov01; 
+ // float pfMET_Corr_Cov11; 
+/*  float pfMET_Corr_jerup; 
   float pfMET_Corr_jerdn; 
   float pfMET_Corr_jenup; 
   float pfMET_Corr_jendn; 
@@ -86,8 +86,8 @@ class setOutputTree {
   float pfMET_Corr_phiuncup; 
   float pfMET_Corr_phiuncdn; 
   float pfMET_Corr_phijrsup; 
-  float pfMET_Corr_phijrsdn; 
-  float pfMETpuppi;
+  float pfMET_Corr_phijrsdn; */
+/*  float pfMETpuppi;
   float pfMETpuppi_jes_up;
   float pfMETpuppi_jes_dn;
   float pfMETpuppi_jer;
@@ -101,14 +101,14 @@ class setOutputTree {
   float pfMETpuppi_Corr_phi; 
   float pfMETpuppi_Corr_Cov00; 
   float pfMETpuppi_Corr_Cov01; 
-  float pfMETpuppi_Corr_Cov11; 
+  float pfMETpuppi_Corr_Cov11;
   float nu_pz_type0;
   float nu_pz_type2;
   float nu_pz_run2;
   float nu_pz_run2_oth;
   int nu_pz_run2_type;
   int nu_pz_isre;
-  int type;
+  int type;*/
   float l_pt1;
   float l_eta1;
   float l_phi1;
@@ -121,11 +121,22 @@ class setOutputTree {
   float l_e2;
   float l_charge2;
   float l_iso2;
+  float l_pt3;
+  float l_eta3;
+  float l_phi3;
+  float l_e3;
+  float l_charge3;
+  float l_iso3;
   float dilep_pt;
   float dilep_eta;
   float dilep_phi;
   float dilep_m;
-  float ungroomed_AK8jet_pt;
+  float trilep_pt;
+  float trilep_eta;
+  float trilep_phi;
+  float trilep_m;
+
+/*  float ungroomed_AK8jet_pt;
   float ungroomed_AK8jet_pt_jes_up;
   float ungroomed_AK8jet_pt_jes_dn; 
   float ungroomed_AK8jet_pt_jer;
@@ -198,8 +209,8 @@ float AK8jet_e3_v1_sdb05;
 float AK8jet_e3_v2_sdb05;
 float AK8jet_e4_v1_sdb05;
 float AK8jet_e4_v2_sdb05;
-float AK8jet_qjet;
-  float AK4_jetjet_pt;
+float AK8jet_qjet;*/
+/*  float AK4_jetjet_pt;
   float AK4_jetjet_mass;
   float AK4_jetjet_deltaeta;
   float AK4_jetjet_deltaphi;
@@ -208,8 +219,8 @@ float AK8jet_qjet;
   float PuppiAK4_jetjet_mass;
   float PuppiAK4_jetjet_deltaeta;
   float PuppiAK4_jetjet_deltaphi;
-  float PuppiAK4_jetjet_deltar;
-  float ttb_ungroomed_jet_pt;
+  float PuppiAK4_jetjet_deltar;*/
+/*  float ttb_ungroomed_jet_pt;
   float ttb_ungroomed_jet_eta;
   float ttb_ungroomed_jet_phi;
   float ttb_ungroomed_jet_e;
@@ -294,8 +305,8 @@ float PuppiAK8jet_e3_v1_sdb05;
 float PuppiAK8jet_e3_v2_sdb05;
 float PuppiAK8jet_e4_v1_sdb05;
 float PuppiAK8jet_e4_v2_sdb05;
-float PuppiAK8jet_qjet;
-  float AK4_jet1_pt;
+float PuppiAK8jet_qjet;*/
+ /* float AK4_jet1_pt;
   float AK4_jet1_pt_jes_up;
   float AK4_jet1_pt_jes_dn;
   float AK4_jet1_pt_jer;
@@ -330,38 +341,82 @@ float PuppiAK8jet_qjet;
   float PuppiAK4_jet2_pt_jer_dn;
   float PuppiAK4_jet2_eta;
   float PuppiAK4_jet2_phi;
-  float PuppiAK4_jet2_e;
+  float PuppiAK4_jet2_e;*/
   int   isGen;
-  float lep_pt_gen;
-  float lep_eta_gen;
+  float lep1_pt_gen;
+ float lep1_eta_gen;
+  float lep1_m_gen;
+  float lep2_m_gen ; 
+float lep2_pt_gen;
+  float lep2_eta_gen;
+float lep3_pt_gen;
+ float lep3_eta_gen;
+  float lep3_m_gen;
+float Zeppen1;
+float Zeppen2;  
+
+
+float dilep_m_gen;
+float trilep_m_gen;
+float mass_Z;
+
   float W_pt_gen;
   float W_pz_gen;
   float W_rap_gen;
-  float nu_pz_gen;
-  float nu_pt_gen;
-  float nu_phi_gen;
-  float nu_eta_gen;
-  float hadW_pt_gen;
-  float hadW_eta_gen;
-  float hadW_phi_gen;
-  float hadW_e_gen;
-  float hadW_m_gen;
+float Z_pt_gen;
+  float Z_pz_gen;
+  float Z_rap_gen;
+
+
+
+
+
+
+
+  float nu1_pz_gen;
+  float nu1_pt_gen;
+  float nu1_phi_gen;
+  float nu1_eta_gen;
+ float nu2_pz_gen;
+  float nu2_pt_gen;
+  float nu2_phi_gen;
+  float nu2_eta_gen;
+float nu3_pz_gen;
+  float nu3_pt_gen;
+  float nu3_phi_gen;
+  float nu3_eta_gen;
+
+ //loat hadW_pt_gen;
+ // float hadW_eta_gen;
+ // float hadW_phi_gen;
+//  float hadW_e_gen;
+//  float hadW_m_gen;
   float lepW_pt_gen;
   float lepW_eta_gen;
   float lepW_phi_gen;
   float lepW_e_gen;
   float lepW_m_gen;
-  float WW_mass_gen;
-  float WW_mT_gen;
-  float WW_pT_gen;
-  float AK8_pt_gen;
+  float lepZ_pt_gen;
+  float lepZ_eta_gen;
+  float lepZ_phi_gen;
+  float lepZ_e_gen;
+  float lepZ_m_gen;
+
+
+
+
+  float WZ_eta_gen;
+  float WZ_mass_gen;
+  float WZ_mT_gen;
+  float WZ_pT_gen;
+/*  float AK8_pt_gen;
   float AK8_eta_gen;
   float AK8_phi_gen;
   float AK8_e_gen;
   float AK8_mass_gen;
   float AK8_pruned_mass_gen;
   float AK8_softdrop_mass_gen;
-  float AK8_softdrop_pt_gen;
+  float AK8_softdrop_pt_gen;*/
   float AK4_1_pt_gen;
   float AK4_1_eta_gen;
   float AK4_1_phi_gen;
@@ -381,7 +436,7 @@ float PuppiAK8jet_qjet;
   float AK4Puppi_DR_GENRECO_11;
   float AK4Puppi_DR_GENRECO_12;
   float AK4Puppi_DR_GENRECO_21;
-  float AK4Puppi_DR_GENRECO_22;
+/*  float AK4Puppi_DR_GENRECO_22;
   float deltaR_Wjet_GenReco;
   float deltaR_lak8jet;
   float deltaphi_METak8jet;
@@ -396,8 +451,8 @@ float PuppiAK8jet_qjet;
   float deltaphi_METPuppiak4jetjet;
   float deltaphi_VPuppiak4jetjet;
   float deltaR_l2Puppiak8jet;
-  float deltaR_VLepPuppiak8jet;
-  float v_pt_type2;
+  float deltaR_VLepPuppiak8jet;*/
+/*  float v_pt_type2;
   float v_pt_type0;
   float v_pt_run2;
   float v_eta_type2;
@@ -483,8 +538,8 @@ float PuppiAK8jet_qjet;
   float mass_lvjj_type0_met_jes_up_PuppiAK4;
   float mass_lvjj_type0_met_jes_dn_PuppiAK4;
   float mass_lvjj_type2_PuppiAK4;
-  float mass_lvjj_run2_PuppiAK4;
-  float mass_llj_PuppiAK8;
+  float mass_lvjj_run2_PuppiAK4;*/
+/*  float mass_llj_PuppiAK8;
   float pt_llj_PuppiAK8;
   float eta_llj_PuppiAK8;
   float phi_llj_PuppiAK8;
@@ -493,25 +548,25 @@ float PuppiAK8jet_qjet;
   float AK8_closerjet_pt;
   float AK8_closerjet_eta;
   float AK8_closerjet_phi;
-  float AK8_closerjet_e;
+  float AK8_closerjet_e;*/
   int njets;
-  int njetsPuppi;
+ /* int njetsPuppi;
   int nGoodAK8jets;
-  int nGoodPuppiAK8jets;
+  int nGoodPuppiAK8jets;*/
   int njets_unmerged;
   int njetsPuppi_unmerged;
   int nBTagJet_loose;
   int nBTagJet_medium;
   int nBTagJet_tight;
-  int nBTagJetPuppi_loose;
+/*  int nBTagJetPuppi_loose;
   int nBTagJetPuppi_medium;
-  int nBTagJetPuppi_tight;
+  int nBTagJetPuppi_tight;*/
   int nBTagJet_loose_unmerged;
   int nBTagJet_medium_unmerged;
   int nBTagJet_tight_unmerged;
-  int nBTagJetPuppi_loose_unmerged;
+/*  int nBTagJetPuppi_loose_unmerged;
   int nBTagJetPuppi_medium_unmerged;
-  int nBTagJetPuppi_tight_unmerged;
+  int nBTagJetPuppi_tight_unmerged;*/
   float btag0Wgt;
   float btag1Wgt;
   float btag2Wgt;
@@ -565,8 +620,8 @@ float PuppiAK8jet_qjet;
   float vbf_maxpt_j2_mass_jes_dn;
   float vbf_maxpt_j2_bDiscriminatorCSV;
   float vbf_maxpt_j2_charge;
-  int   vbfPuppi_maxpt_j1_ID;
-  int   vbfPuppi_maxpt_j2_ID;
+ // int   vbfPuppi_maxpt_j1_ID;
+//  int   vbfPuppi_maxpt_j2_ID;
   float vbf_maxpt_jj_pt;
   float vbf_maxpt_jj_pt_jes_up;
   float vbf_maxpt_jj_pt_jes_dn;
@@ -578,11 +633,11 @@ float PuppiAK8jet_qjet;
   float vbf_maxpt_jj_Deta;
   float vbf_maxpt_jj_Deta_jes_up;
   float vbf_maxpt_jj_Deta_jes_dn;
-  float vbf_maxpt_deltaR;
-  float deltaphi_METvbfJ1;
-  float deltaphi_METvbfJ2;
-  float deltaphi_METmin;	// min of delta phi with ak8, and two ak4 jets
-  float vbfPuppi_maxpt_j1_pt;
+//  float vbf_maxpt_deltaR;
+ // float deltaphi_METvbfJ1;
+ // float deltaphi_METvbfJ2;
+//  float deltaphi_METmin;	// min of delta phi with ak8, and two ak4 jets
+/*  float vbfPuppi_maxpt_j1_pt;
   float vbfPuppi_maxpt_j1_pt_jes_up;
   float vbfPuppi_maxpt_j1_pt_jes_dn;
   float vbfPuppi_maxpt_j1_pt_jer;
@@ -629,9 +684,9 @@ float PuppiAK8jet_qjet;
   float jet3_e;
   float jet3_btag;
   float deltaR_AK8_closestBtagJet;
-  float deltaR_AK8_closestBtagJet_loose;
+  float deltaR_AK8_closestBtagJet_loose;*/
 //  float deltaR_AK4;  
-  float costheta1Puppi_type0;
+/*  float costheta1Puppi_type0;
   float costheta2Puppi_type0;
   float phiPuppi_type0;
   float phi1Puppi_type0;
@@ -656,8 +711,10 @@ float PuppiAK8jet_qjet;
   float WWEta;
   float WWEta_PuppiAK8;
   float WWRapidity;
-  float WWRapidity_PuppiAK8;
-  float ZeppenfeldWH;
+  float WWRapidity_PuppiAK8;*/
+ float ZeppenfeldW1;
+ float ZeppenfeldW2;
+/*float ZeppenfeldWH;
   float ZeppenfeldWHPuppi;
   float RpTPuppi_type0;
   float ZeppenfeldWLPuppi_type0;
@@ -718,7 +775,7 @@ float PuppiAK8jet_qjet;
   float VBSCentrality_2Lep;
   float RpT_2Lep;
   float ZeppenfeldWL_2Lep;
-  float LeptonProjection_2Lep;
+  float LeptonProjection_2Lep;*/
 
   setOutputTree(TTree* outputTree);
   //  setOutputTree(TTree *outputTree=0);

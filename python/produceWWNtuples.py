@@ -10,7 +10,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser (description = 'produce ntuples with WW semileptonic final state')
     parser.add_argument ('-i', '--inputFolder' , default = '/store/user/arapyan/Run2/' , help='input folder with the reduced trees')
     parser.add_argument ('-o', '--output' , default = 'OutPutRootFile', help='output file')
-    parser.add_argument ('-v', '--vbfsel' , default = '2', help='1 = select highest pt jet pair, 2 = select highest mjj, 3 = select highest DEta_jj VBF Jets')
+    parser.add_argument ('-v', '--vbfsel' , default = '1', help='1 = select highest pt jet pair, 2 = select highest mjj, 3 = select highest DEta_jj VBF Jets')
     parser.add_argument ('-mc', '--ismc' , default = '0', help='is MC or not')
     parser.add_argument ('-c', '--cluster' , default = 'lxplus', help='cluster can be lxplus or lpc')
     parser.add_argument ('-t', '--tree' , default = 'Events', help='name of the input tree')
