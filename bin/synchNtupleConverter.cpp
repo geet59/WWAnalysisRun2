@@ -40,7 +40,7 @@ int main (int argc, char** argv)
   std::string inputFile = argv[4];
 
   std::cout<<"file: "<<(inputFile).c_str()<<std::endl;
-  TFile * fS = new TFile((inputFolder+leptonName+"/WWTree_"+inputFile+".root").c_str());
+  TFile * fS = new TFile((inputFolder+leptonName+"/WZTree_"+inputFile+".root").c_str());
   TTree * inputTree = (TTree *)fS->Get("otree");
 
   int run;
@@ -104,64 +104,64 @@ int main (int argc, char** argv)
   inputTree->SetBranchAddress("jet3_btag", &jet3_btag);
 
   //---------output tree----------------
-  TFile* outROOT = TFile::Open((std::string("output/output_synch_")+leptonName+std::string("/")+std::string("WWTree_")+outputFile+std::string(".root")).c_str(),"recreate");
+  TFile* outROOT = TFile::Open((std::string("output/output_synch_")+leptonName+std::string("/")+std::string("WZTree_")+outputFile+std::string(".root")).c_str(),"recreate");
   outROOT->cd();
   TTree* outTree = new TTree("otree", "otree");
   outTree->SetDirectory(0);
-  setOutputTreeSynch *WWTree = new setOutputTreeSynch(outTree);
+  setOutputTreeSynch *WZTree = new setOutputTreeSynch(outTree);
   
   //---------start loop on events------------
   for (Long64_t jentry=0; jentry<inputTree->GetEntries();jentry++) {
 
     inputTree->GetEntry(jentry);
 
-    WWTree->initializeVariables(); //initialize all variables
+    WZTree->initializeVariables(); //initialize all variables
 
     if(jentry % 1000 == 0)    
       cout << "read entry: " << jentry << endl;
 
-    WWTree->issignal = issignal;
+    WZTree->issignal = issignal;
 
     //save event variables
-    WWTree->run   = run;
-    WWTree->event = event;
-    WWTree->lumi = lumi;
-    WWTree->njets = njets;
-    WWTree->nPV  = nPV;
+    WZTree->run   = run;
+    WZTree->event = event;
+    WZTree->lumi = lumi;
+    WZTree->njets = njets;
+    WZTree->nPV  = nPV;
     
-    WWTree->l_pt  = l_pt;
-    WWTree->l_eta = l_eta;
-    WWTree->l_phi = l_phi;	
+    WZTree->l_pt  = l_pt;
+    WZTree->l_eta = l_eta;
+    WZTree->l_phi = l_phi;	
 
-    WWTree->pfMET   = pfMET;
-    WWTree->pfMETPhi = pfMET_Phi;
+    WZTree->pfMET   = pfMET;
+    WZTree->pfMETPhi = pfMET_Phi;
     
-    WWTree->W_pt = v_pt;
-    WWTree->W_eta = v_eta;
-    WWTree->W_phi = v_phi;
+    WZTree->W_pt = v_pt;
+    WZTree->W_eta = v_eta;
+    WZTree->W_phi = v_phi;
 
-    WWTree->jet_pt  = ungroomed_jet_pt;
-    WWTree->jet_eta = ungroomed_jet_eta;
-    WWTree->jet_phi = ungroomed_jet_phi;
-    WWTree->jet_mass_pruned   = jet_mass_pr;
-    WWTree->jet_mass_softdrop   = jet_mass_so;
-    WWTree->jet_tau2tau1   = jet_tau2tau1;
+    WZTree->jet_pt  = ungroomed_jet_pt;
+    WZTree->jet_eta = ungroomed_jet_eta;
+    WZTree->jet_phi = ungroomed_jet_phi;
+    WZTree->jet_mass_pruned   = jet_mass_pr;
+    WZTree->jet_mass_softdrop   = jet_mass_so;
+    WZTree->jet_tau2tau1   = jet_tau2tau1;
 
-    WWTree->nbtag=nBTagJet_medium;
-    WWTree->m_lvj = mass_lvj_type0;
+    WZTree->nbtag=nBTagJet_medium;
+    WZTree->m_lvj = mass_lvj_type0;
 
-    WWTree->jet2_pt = jet2_pt;
-    WWTree->jet2_btag = jet2_btag;
-    WWTree->jet3_pt = jet3_pt;
-    WWTree->jet3_btag = jet3_btag;
+    WZTree->jet2_pt = jet2_pt;
+    WZTree->jet2_btag = jet2_btag;
+    WZTree->jet3_pt = jet3_pt;
+    WZTree->jet3_btag = jet3_btag;
 
     //fill the tree
-    if(strcmp(leptonName.c_str(),"mu")==0 && WWTree->issignal==1 && WWTree->W_pt>200 && WWTree->pfMET>40 && WWTree->l_pt>53 && WWTree->jet_pt>200 && WWTree->nbtag <1 && ((WWTree->jet_mass_pruned > 40 && WWTree->jet_mass_pruned<65) || (WWTree->jet_mass_pruned > 135 && WWTree->jet_mass_pruned<150))) {
-      //WWTree->jet_mass_pruned > 40 && WWTree->jet_mass_pruned < 130) {//&& WWTree->jet_tau2tau1<0.5) {
+    if(strcmp(leptonName.c_str(),"mu")==0 && WZTree->issignal==1 && WZTree->W_pt>200 && WZTree->pfMET>40 && WZTree->l_pt>53 && WZTree->jet_pt>200 && WZTree->nbtag <1 && ((WZTree->jet_mass_pruned > 40 && WZTree->jet_mass_pruned<65) || (WZTree->jet_mass_pruned > 135 && WZTree->jet_mass_pruned<150))) {
+      //WZTree->jet_mass_pruned > 40 && WZTree->jet_mass_pruned < 130) {//&& WZTree->jet_tau2tau1<0.5) {
       outTree->Fill();
     }
-    if(strcmp(leptonName.c_str(),"el")==0 && WWTree->issignal==1 && WWTree->W_pt>200 && WWTree->pfMET>80 && WWTree->l_pt>120 && WWTree->jet_pt>200 && WWTree->nbtag <1 && ((WWTree->jet_mass_pruned > 40 && WWTree->jet_mass_pruned<65) || (WWTree->jet_mass_pruned > 135 && WWTree->jet_mass_pruned<150))) {
-      //WWTree->jet_mass_pruned > 40 && WWTree->jet_mass_pruned < 130) {//&& WWTree->jet_tau2tau1<0.5) {
+    if(strcmp(leptonName.c_str(),"el")==0 && WZTree->issignal==1 && WZTree->W_pt>200 && WZTree->pfMET>80 && WZTree->l_pt>120 && WZTree->jet_pt>200 && WZTree->nbtag <1 && ((WZTree->jet_mass_pruned > 40 && WZTree->jet_mass_pruned<65) || (WZTree->jet_mass_pruned > 135 && WZTree->jet_mass_pruned<150))) {
+      //WZTree->jet_mass_pruned > 40 && WZTree->jet_mass_pruned < 130) {//&& WZTree->jet_tau2tau1<0.5) {
       outTree->Fill();
     }
   }

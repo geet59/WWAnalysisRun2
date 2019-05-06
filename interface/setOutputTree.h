@@ -31,9 +31,11 @@ class setOutputTree {
   float top2_NNLO_Weight;
   float trig_eff_Weight;
   float trig_eff_Weight2;
-  float id_eff_Weight;
+  float trig_eff_Weight3;
+float id_eff_Weight;
   float id_eff_Weight2;
- // float gen_top1_pt;
+ float id_eff_Weight3;
+// float gen_top1_pt;
  // float gen_top2_pt;
  // float totalEventWeight;
  // float totalEventWeight_2;
