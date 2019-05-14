@@ -23,51 +23,54 @@
 //--------------------------------------------------------------------------------------------------
 bool passJetLooseSel(const baconhep::TJet *jet)
 {
-  if(fabs(jet->eta)<= 2.7){
-    if(jet->neuHadFrac >= 0.99) return false;
-    if(jet->neuEmFrac  >= 0.99) return false;
+  if(fabs(jet->eta)<= 2.6){
+    if(jet->neuHadFrac >= 0.90) return false;
+    if(jet->neuEmFrac  >= 0.90) return false;
     if(jet->nParticles <= 1)    return false;
-  }
-  if(fabs(jet->eta)<= 2.4) {
     if(jet->chHadFrac == 0)     return false;
     if(jet->nCharged  == 0)     return false;
-    if(jet->chEmFrac  >= 0.99)  return false;
+  }
+  if(fabs(jet->eta) > 2.6 && fabs(jet->eta) <= 2.7) {
+    if(jet->neuEmFrac >= 0.90)  return false;
+    if(jet->neuHadFrac >= 0.99) return false;
+    if(jet->nCharged == 0)     return false;
   }
   if(fabs(jet->eta) > 2.7 && fabs(jet->eta) <= 3.0) {
-    if(jet->neuEmFrac <= 0.01)  return false;
-    if(jet->neuHadFrac >= 0.98) return false;
-    if(jet->nNeutrals <= 2)     return false;
+    if(jet->neuEmFrac <= 0.02 && jet->neuEmFrac >= 0.99 )  return false;
+    if(jet->nNeutrals <= 2) return false;
   }
+
   if(fabs(jet->eta) > 3.0) {
     if(jet->neuEmFrac >= 0.90)  return false;
+    if(jet->neuHadFrac <= 0.20) return false;
     if(jet->nNeutrals <= 10)    return false;
   }
   return true;
 }
 // PUPPI JET ID https://indico.cern.ch/event/578287/contributions/2347317/attachments/1361297/2060081/JMARmeeting_PUPPI_AK4_Retune_26Oct2016.pdf#page=16
-bool passPuppiJetLooseSel(const baconhep::TJet *jet)
-{
-  if(fabs(jet->eta)<= 2.7){
-    if(jet->neuHadFrac >= 0.99) return false;
-    if(jet->neuEmFrac  >= 0.99) return false;
-    if(jet->nParticles <= 1)    return false;
+/*bool passPuppiJetLooseSel(const baconhep::TJet *jet)
+  {
+  if(fabs(jet->eta)<= 2.6){
+  if(jet->neuHadFrac >= 0.99) return false;
+  if(jet->neuEmFrac  >= 0.99) return false;
+  if(jet->nParticles <= 1)    return false;
   }
   if(fabs(jet->eta)<= 2.4) {
-    if(jet->chHadFrac == 0)     return false;
-    if(jet->nCharged  == 0)     return false;
-    if(jet->chEmFrac  >= 0.99)  return false;
+  if(jet->chHadFrac == 0)     return false;
+  if(jet->nCharged  == 0)     return false;
+  if(jet->chEmFrac  >= 0.99)  return false;
   }
   if(fabs(jet->eta) > 2.7 && fabs(jet->eta) <= 3.0) {
-    if(jet->neuEmFrac <= 0.01)  return false;
-    if(jet->neuHadFrac >= 0.98) return false;
-    if(jet->nNeutrals <= 1)     return false;
+  if(jet->neuEmFrac <= 0.01)  return false;
+  if(jet->neuHadFrac >= 0.98) return false;
+  if(jet->nNeutrals <= 1)     return false;
   }
   if(fabs(jet->eta) > 3.0) {
-    if(jet->neuEmFrac >= 0.50)  return false;
-    if(jet->nNeutrals <= 2)    return false;
+  if(jet->neuEmFrac >= 0.50)  return false;
+  if(jet->nNeutrals <= 2)    return false;
   }
   return true;
-}
+  }*/
 //--------------------------------------------------------------------------------------------------
 bool passJetTightSel(const baconhep::TJet *jet)
 {
@@ -95,16 +98,22 @@ bool passJetTightSel(const baconhep::TJet *jet)
 //--------------------------------------------------------------------------------------------------
 bool passJetTightLepVetoSel(const baconhep::TJet *jet)
 {
-  if(fabs(jet->eta)<= 2.7){
+  if(fabs(jet->eta)<= 2.6){
     if(jet->neuHadFrac >= 0.90) return false;
     if(jet->neuEmFrac  >= 0.90) return false;
     if(jet->nParticles <= 1)    return false;
     if(jet->muonFrac   >= 0.8)  return false;
-  }
-  if(fabs(jet->eta)<= 2.4) {
     if(jet->chHadFrac == 0)     return false;
+    if(jet->nCharged  == 0)     return false; 
+    if(jet->chEmFrac  >= 0.80)  return false;
+  }
+  if(fabs(jet->eta) > 2.6 && fabs(jet->eta) <= 2.7)
+  {
+    if(jet->neuHadFrac >= 0.90)     return false;
+    if(jet->neuEmFrac  >= 0.99) return false;
+    if(jet->muonFrac   >= 0.8)  return false;
     if(jet->nCharged  == 0)     return false;
-    if(jet->chEmFrac  >= 0.90)  return false;
+    if(jet->chEmFrac  >= 0.80)  return false;
   }
   return true;
 }

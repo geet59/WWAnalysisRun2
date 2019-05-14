@@ -37,7 +37,7 @@ float id_eff_Weight;
  float id_eff_Weight3;
 // float gen_top1_pt;
  // float gen_top2_pt;
- // float totalEventWeight;
+  float totalEventWeight;
  // float totalEventWeight_2;
  // float totalEventWeight_3;
 
@@ -375,14 +375,14 @@ float Z_pt_gen;
 
 
 
-  float nu1_pz_gen;
+/*  float nu1_pz_gen;
   float nu1_pt_gen;
   float nu1_phi_gen;
   float nu1_eta_gen;
  float nu2_pz_gen;
   float nu2_pt_gen;
   float nu2_phi_gen;
-  float nu2_eta_gen;
+  float nu2_eta_gen;*/
 float nu3_pz_gen;
   float nu3_pt_gen;
   float nu3_phi_gen;
@@ -715,7 +715,7 @@ float nu3_pz_gen;
   float WWRapidity;
   float WWRapidity_PuppiAK8;*/
  float ZeppenfeldW1;
- float ZeppenfeldW2;
+// float ZeppenfeldW2;
 /*float ZeppenfeldWH;
   float ZeppenfeldWHPuppi;
   float RpTPuppi_type0;

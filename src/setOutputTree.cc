@@ -33,11 +33,13 @@ void setOutputTree::initializeVariables()
   top2_NNLO_Weight	=1.;
   trig_eff_Weight	=1.;
   trig_eff_Weight2	=1.;
+trig_eff_Weight3      =1.;
   id_eff_Weight		=1.;
   id_eff_Weight2	=1.;
+id_eff_Weight3        =1.;
 //  gen_top1_pt		=-999;
 //  gen_top2_pt		=-999;
- // totalEventWeight	=-999;
+  totalEventWeight	=-999;
  // totalEventWeight_2	=-999;
  // totalEventWeight_3	=-999;
   totalEventWeight_2Lep	=-999;
@@ -657,7 +659,7 @@ PuppiAK8jet_qjet  = -999;*/
   LeptonProjectionPuppi_type2=-999.0;*/
   ////
   ZeppenfeldW1          =-999.0;
-  ZeppenfeldW2          =-999.0;
+  //ZeppenfeldW2          =-999.0;
  /* costheta1_type0	=-999;
   costheta2_type0	=-999;
   costhetastar_type0	=-999;
@@ -786,7 +788,7 @@ void setOutputTree::setBranches()
   fTree->Branch("trig_eff_Weight2",&trig_eff_Weight2,"trig_eff_Weight2/F");
   fTree->Branch("id_eff_Weight",&id_eff_Weight,"id_eff_Weight/F");
   fTree->Branch("id_eff_Weight2",&id_eff_Weight2,"id_eff_Weight2/F");
- // fTree->Branch("totalEventWeight",&totalEventWeight,"totalEventWeight/F");
+  fTree->Branch("totalEventWeight",&totalEventWeight,"totalEventWeight/F");
   fTree->Branch("pu_Weight",&pu_Weight,"pu_Weight/F");
  // fTree->Branch("totalEventWeight_2",&totalEventWeight_2,"totalEventWeight_2/F");
   fTree->Branch("pu_Weight_up",&pu_Weight_up,"pu_Weight_up/F");
@@ -857,6 +859,16 @@ void setOutputTree::setBranches()
   fTree->Branch("dilep_m",&dilep_m,"dilep_m/F");
   fTree->Branch("l_charge2",&l_charge2,"l_charge2/F");
   fTree->Branch("l_iso2",&l_iso2,"l_iso2/F");
+fTree->Branch("l_pt3",&l_pt3,"l_pt3/F");
+    fTree->Branch("l_eta3",&l_eta3,"l_eta3/F");
+    fTree->Branch("l_phi3",&l_phi3,"l_phi3/F");
+    fTree->Branch("l_e3",&l_e3,"l_e3/F");
+   fTree->Branch("l_charge3",&l_charge3,"l_charge3/F");
+   fTree->Branch("l_iso3",&l_iso3,"l_iso3/F");
+ fTree->Branch("trilep_pt",&trilep_pt,"trilep_pt/F");
+ fTree->Branch("trilep_eta",&trilep_eta,"trilep_eta/F");
+    fTree->Branch("trilep_phi",&trilep_phi,"trilep_phi/F");
+   fTree->Branch("trilep_m",&trilep_m,"trilep_m/F");
  /* fTree->Branch("ungroomed_AK8jet_pt",&ungroomed_AK8jet_pt,"ungroomed_AK8jet_pt/F");
   fTree->Branch("ungroomed_AK8jet_pt_jes_up",&ungroomed_AK8jet_pt_jes_up,"ungroomed_AK8jet_pt_jes_up/F");
   fTree->Branch("ungroomed_AK8jet_pt_jes_dn",&ungroomed_AK8jet_pt_jes_dn,"ungroomed_AK8jet_pt_jes_dn/F");
@@ -1074,13 +1086,13 @@ fTree->Branch("lep3_pt_gen",&lep3_pt_gen,"lep3_pt_gen");
   fTree->Branch("lep3_eta_gen",&lep3_eta_gen,"lep3_eta_gen");
 
 
-  fTree->Branch("W_pt_gen",&W_pt_gen,"W_pt_gen");
+ /* fTree->Branch("W_pt_gen",&W_pt_gen,"W_pt_gen");
   fTree->Branch("W_pz_gen",&W_pz_gen,"W_pz_gen");
   fTree->Branch("W_rap_gen",&W_rap_gen,"W_rap_gen");
 fTree->Branch("Z_pt_gen",&Z_pt_gen,"Z_pt_gen");
   fTree->Branch("Z_pz_gen",&Z_pz_gen,"Z_pz_gen");
   fTree->Branch("Z_rap_gen",&Z_rap_gen,"Z_rap_gen");
-
+*/
 
 
 
@@ -1091,11 +1103,11 @@ fTree->Branch("Z_pt_gen",&Z_pt_gen,"Z_pt_gen");
   fTree->Branch("nu3_pt_gen",&nu3_pt_gen,"nu3_pt_gen");
   fTree->Branch("nu3_phi_gen",&nu3_phi_gen,"nu3_phi_gen");
   fTree->Branch("nu3_eta_gen",&nu3_eta_gen,"nu3_eta_gen");
- fTree->Branch("nu2_pz_gen",&nu2_pz_gen,"nu2_pz_gen");
+/* fTree->Branch("nu2_pz_gen",&nu2_pz_gen,"nu2_pz_gen");
   fTree->Branch("nu2_pt_gen",&nu2_pt_gen,"nu2_pt_gen");
   fTree->Branch("nu2_phi_gen",&nu2_phi_gen,"nu2_phi_gen");
   fTree->Branch("nu2_eta_gen",&nu2_eta_gen,"nu2_eta_gen");
-
+*/
 
 
 
@@ -1130,6 +1142,7 @@ fTree->Branch("mass_Z",&mass_Z,"mass_Z");
   fTree->Branch("WZ_mass_gen",&WZ_mass_gen,"WZ_mass_gen");
   fTree->Branch("WZ_mT_gen",&WZ_mT_gen,"WZ_mT_gen");
   fTree->Branch("WZ_pT_gen",&WZ_pT_gen,"WZ_pT_gen");
+fTree->Branch("WZ_eta_gen",&WZ_eta_gen,"WZ_eta_gen");
 /*  fTree->Branch("AK8_pt_gen",&AK8_pt_gen,"AK8_pt_gen");
   fTree->Branch("AK8_eta_gen",&AK8_eta_gen,"AK8_eta_gen");
   fTree->Branch("AK8_phi_gen",&AK8_phi_gen,"AK8_phi_gen");
@@ -1421,7 +1434,7 @@ fTree->Branch("mass_Z",&mass_Z,"mass_Z");
   fTree->Branch("ZeppenfeldWHPuppi", &ZeppenfeldWHPuppi , "ZeppenfeldWHPuppi/F");
 */
   fTree->Branch("ZeppenfeldW1", &ZeppenfeldW1 , "ZeppenfeldW1/F");
-  fTree->Branch("ZeppenfeldW2", &ZeppenfeldW2 , "ZeppenfeldW2/F");
+  //fTree->Branch("ZeppenfeldW2", &ZeppenfeldW2 , "ZeppenfeldW2/F");
 
   ////
 /*  fTree->Branch("costheta1Puppi_type0",&costheta1Puppi_type0 ,"costheta1Puppi_type0/F");

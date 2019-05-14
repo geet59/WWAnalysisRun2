@@ -39,12 +39,11 @@
 #include "BaconAna/Utils/interface/TTrigger.hh"
 #include "BaconAna/DataFormats/interface/TLHEWeight.hh"
 
-// HEADER FILE FOR JES 
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
-// HEADER FOR B-TAG
+
 #include "CondFormats/BTauObjects/interface/BTagCalibration.h"
 #include "CondTools/BTau/interface/BTagCalibrationReader.h"
 #include "../BtagUnc.hh"
@@ -99,21 +98,16 @@ int main (int argc, char** argv)
   const baconhep::TTrigger triggerMenu(iHLTFile);  
   std::cout<<"Apply trigger: "<<applyTrigger<<std::endl;
 
-  //  TLorentzVector W_type0,W_type0_jes_up, W_type0_jes_dn, W_type0_jer_up, W_type0_jer_dn, W_type2, W_run2,W_puppi_type2, W_puppi_type0, W_puppi_run2;
+
   TLorentzVector LEP1, LEP2, LEP3;// SJ1_PuppiAK8, SJ2_PuppiAK8, SJ1, SJ2;
   TLorentzVector NU0,NU1,NU2,NU3;//NU0_puppi,NU1_puppi,NU2_puppi;
   TLorentzVector NU0_jes_up, NU0_jes_dn;
-  // TLorentzVector NU0_puppi_jes_up, NU0_puppi_jes_dn;
   TLorentzVector NU0_jer_up, NU0_jer_dn;
-  //  TLorentzVector JET, JET_PuppiAK8;
   TLorentzVector  AK4;
   TLorentzVector JET_jes_up, JET_jes_dn;// JET_PuppiAK8_jes_up, JET_PuppiAK8_jes_dn;
   TLorentzVector AK4_JET1,AK4_JET2;
   TLorentzVector AK4_JET1_jes_up, AK4_JET1_jes_dn;
   TLorentzVector AK4_JET2_jes_up, AK4_JET2_jes_dn;
-  // TLorentzVector PuppiAK4_JET1,PuppiAK4_JET2;
-  //  TLorentzVector PuppiAK4_JET1_jes_up, PuppiAK4_JET1_jes_dn;
-  //  TLorentzVector PuppiAK4_JET2_jes_up, PuppiAK4_JET2_jes_dn;
   TLorentzVector VBF1,VBF2,TOT;
   TLorentzVector VBF1_jes_up, VBF1_jes_dn, VBF2_jes_up, VBF2_jes_dn;
   TLorentzVector ELE,MU;
@@ -125,8 +119,6 @@ int main (int argc, char** argv)
   std::vector<TLorentzVector> looseEle;
 
   int ok=0, total=0;
-
-  // Data structures to store info from TTrees
   baconhep::TEventInfo *info  	= new baconhep::TEventInfo();
   baconhep::TGenEventInfo *gen	= new baconhep::TGenEventInfo();
   TClonesArray *genPartArr 	= new TClonesArray("baconhep::TGenParticle");
@@ -134,8 +126,6 @@ int main (int argc, char** argv)
   TClonesArray *electronArr	= new TClonesArray("baconhep::TElectron");
   TClonesArray *vertexArr	= new TClonesArray("baconhep::TVertex");
   TClonesArray *jetArr		= new TClonesArray("baconhep::TJet");
-  //  TClonesArray *vjetArrPuppi	= new TClonesArray("baconhep::TJet");
-  //  TClonesArray *vjetAddArrPuppi	= new TClonesArray("baconhep::TAddJet");
   TClonesArray *lheWgtArr	= new TClonesArray("baconhep::TLHEWeight");
 
 
@@ -146,8 +136,6 @@ int main (int argc, char** argv)
     sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
   else 
     sprintf(command1,"xrdfs root://cmseos.fnal.gov ls %s | awk '{print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());
-  //sprintf(command1,"eos root://cmseos.fnal.gov find -f %s | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());	// WORKS ONLY WITH INTERACTIVE NODE
-
   std::cout<<command1<<std::endl;
   sprintf(command2,"sed -i '/failed$/d' listTemp_%s.txt",outputFile.c_str());
   system(command1);
@@ -175,8 +163,6 @@ int main (int argc, char** argv)
   TFile *infile=0;
   TTree *eventTree=0;
   int cutEff[21]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
-  // Read and add pileup in histogram
   TFile* pileupFileMC = TFile::Open("puWeights_80x_37ifb.root");
   TH1D* puWeights = (TH1D*)pileupFileMC->Get("puWeights");
   TH1D* puWeightsUp = (TH1D*)pileupFileMC->Get("puWeightsUp");
@@ -184,8 +170,6 @@ int main (int argc, char** argv)
   puWeights->SetBins(75,0,75);
   puWeightsUp->SetBins(75,0,75);
   puWeightsDown->SetBins(75,0,75);
-
-  //---------------- Root Files for ID, ISO, Trigger, GSF correctiosn for ELE and MU both: Starts -------------
   TFile* IDIsoEle = TFile::Open("egammaEffi_EGM2D_TightCutBasedIDSF.root","READ");
   TH1F *hIDIsoEle = (TH1F*)IDIsoEle->Get("EGamma_SF2D");
 
@@ -213,15 +197,7 @@ int main (int argc, char** argv)
   TFile* TriggerMuB = TFile::Open("MuonTrigger_RunGH_23SepReReco_16p146fb.root","READ");
   TH1F* hTriggerMuB = (TH1F*)TriggerMuB->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio");
 
-  //---------------- Root Files for ID, ISO, Trigger, GSF correctiosn for ELE and MU both: ENDS -------------
-
   TFile* file = TFile::Open( "puppiCorr.root","READ");
-  // TF1* puppisd_corrGEN      = (TF1*)file->Get("puppiJECcorr_gen");
-  //  TF1* puppisd_corrRECO_cen = (TF1*)file->Get("puppiJECcorr_reco_0eta1v3");
-  //  TF1* puppisd_corrRECO_for = (TF1*)file->Get("puppiJECcorr_reco_1v3eta2v5");
-
-
-  //---------output tree----------------
   TFile* outROOT = TFile::Open((outputFile+(".root")).c_str(),"recreate");
   outROOT->cd();
   TTree* outTree = new TTree("otree", "otree");
@@ -233,7 +209,7 @@ int main (int argc, char** argv)
 
   int nInputFiles = sampleName.size();
 
-  if (isLocal==1) nInputFiles = 21;
+  if (isLocal==1) nInputFiles = 5;
   cout<<"==> Total number of input files : "<<nInputFiles<<endl;
 
   TH1D *MCpu = new TH1D("MCpu","",75,0,75);
@@ -242,8 +218,6 @@ int main (int argc, char** argv)
 
   Long64_t TotalNumberOfEvents = 0, nNegEvents = 0; 
 
-
-  // Set up b-tag scale factor readers
   BTagCalibration calib("csvv2", "CSVv2_Moriond17_B_H.csv");
   BTagCalibrationReader bTagReader(BTagEntry::OP_LOOSE,  // working point: can be OP_LOOSE, OP_MEDIUM, OP_TIGHT 
       "central",             // label for the central value (see the scale factor file)
@@ -253,9 +227,6 @@ int main (int argc, char** argv)
   bTagReader.load(calib, BTagEntry::FLAV_UDSG, "incl");   // use the "incl" measurements for light jets
 
 
-  vector<const baconhep::TJet*> goodJetsv;
-
-  // Loop on input files
   for(int i=0;i<nInputFiles;i++)
   {//loop10 begins
     infile = TFile::Open(sampleName[i]);
@@ -287,7 +258,8 @@ int main (int argc, char** argv)
   cout<<"==> Total number of events : "<<TotalNumberOfEvents<<endl;
   cout<<"==> Total number of negative events : "<<nNegEvents<<endl;
 
-  float weight = std::atof(xSecWeight.c_str())/(std::atof(TotalNumberOfEntries.c_str()) - 2*std::atof(TotalNumberOfNegativeEntries.c_str()));
+  //  float weight = std::atof(xSecWeight.c_str())/((TotalNumberOfEvents) - 2*std::atof(TotalNumberOfNegativeEntries.c_str()));
+  float weight = std::atof(xSecWeight.c_str())/((TotalNumberOfEvents) - 2*std::atof(TotalNumberOfNegativeEntries.c_str()));
   cout<<"Weight of cross-sec/events = "<<weight<<endl;
   int totalEntries=0;
 
@@ -297,10 +269,6 @@ int main (int argc, char** argv)
   JetCorrectorParameters paramAK8chs("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK8PFchs.txt");
   JetCorrectorParameters paramAK8puppi("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK8PFPuppi.txt");
   JetCorrectionUncertainty *fJetUnc_AK4chs = new JetCorrectionUncertainty(paramAK4chs);
-  //  JetCorrectionUncertainty *fJetUnc_AK4puppi = new JetCorrectionUncertainty(paramAK4puppi);
-  // JetCorrectionUncertainty *fJetUnc_AK8chs = new JetCorrectionUncertainty(paramAK8chs);
-  //  JetCorrectionUncertainty *fJetUnc_AK8puppi = new JetCorrectionUncertainty(paramAK8puppi);
-
   //---------start loop on events------------
   std::cout << "---------start loop on events------------" << std::endl;
   jentry2=0;
@@ -324,8 +292,6 @@ int main (int argc, char** argv)
     eventTree->SetBranchAddress("Electron", &electronArr); TBranch *electronBr = eventTree->GetBranch("Electron");
     eventTree->SetBranchAddress("PV",   &vertexArr); TBranch *vertexBr = eventTree->GetBranch("PV");
     eventTree->SetBranchAddress("AK4CHS",   &jetArr); TBranch *jetBr = eventTree->GetBranch("AK4CHS");    
-    // eventTree->SetBranchAddress("AK8Puppi",   &vjetArrPuppi); TBranch *vjetBrPuppi = eventTree->GetBranch("AK8Puppi");  
-    // eventTree->SetBranchAddress("AddAK8Puppi",   &vjetAddArrPuppi); TBranch *vjetAddBrPuppi = eventTree->GetBranch("AddAK8Puppi");  
     TBranch *genBr=0, *genPartBr=0, *lhePartBr=0;
     if(isMC)
     {  //loop11 begins 
@@ -335,12 +301,8 @@ int main (int argc, char** argv)
       {
 	eventTree->SetBranchAddress("LHEWeight",&lheWgtArr); lhePartBr = eventTree->GetBranch("LHEWeight");	       }
     } //loop11 ends
-
-    //for (Long64_t jentry=0; jentry<172; jentry++,jentry2++)
     for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
     {
-      // if (jentry2 != 87 && jentry2 != 113) continue;	// For debug
-      //if (jentry2>100) continue;
       infoBr->GetEntry(jentry);	    
 
 
@@ -350,19 +312,13 @@ int main (int argc, char** argv)
       tightEle.clear();
       looseMuon.clear();
       looseEle.clear();
-
-      //cout<<"check1--all good"<<endl;
       if (jentry2%10000 == 0) std::cout << "\tread entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
-
-      //*********************************
       WZTree->initializeVariables(); //initialize all variables
 
       WZTree->run   = info->runNum;
       WZTree->event = info->evtNum;
       WZTree->lumi  = info->lumiSec;
 
-
-      /////////////////MC Info
       if (isMC==1)
       {//loop14 begins
 	lheWgtArr->Clear();
@@ -381,8 +337,6 @@ int main (int argc, char** argv)
 	v_GEN_hadW.clear();	v_GEN_lepW.clear();	v_GEN_VBFJ1.clear();	v_GEN_VBFJ2.clear();
 	v_GEN_VBFJ.clear();	v_GEN_temp.clear();	vZ_genLep.clear();	v_genNeutrino.clear();
 	v_genWquarks.clear(); 	vW_genLep.clear();//	v_genVBFquarks.clear();
-	//  cout<<"check2--all good"<<endl;
-
 	for (int i = 0; i<genPartArr->GetEntries();i++)
 	{  //loop12 begins
 	  const baconhep::TGenParticle* genloop = (baconhep::TGenParticle*) ((*genPartArr)[i]);
@@ -415,9 +369,6 @@ int main (int argc, char** argv)
 	  WZTree->lep1_pt_gen      = (vZ_genLep[0]).Pt();
 	  WZTree->lep1_eta_gen     = (vZ_genLep[0]).Eta();
 	  WZTree->lep1_m_gen       = (vZ_genLep[0]).M();
-	  /*WZTree->nu1_pz_gen	  = v_genNeutrino[0].Pz();
-	    WZTree->nu1_pt_gen	  = v_genNeutrino[0].Pt();
-	    WZTree->nu1_eta_gen	  = v_genNeutrino[0].Eta();*/
 	  WZTree->lep2_pt_gen      = (vZ_genLep[1]).Pt();
 	  WZTree->lep2_eta_gen     = (vZ_genLep[1]).Eta();
 	  WZTree->lep2_m_gen     = (vZ_genLep[1]).M();
@@ -439,12 +390,6 @@ int main (int argc, char** argv)
 	  WZTree->lepZ_phi_gen    = (vZ_genLep[0]+vZ_genLep[1]).Phi();
 	  WZTree->lepZ_e_gen      = (vZ_genLep[0]+vZ_genLep[1]).E();
 	  WZTree->lepZ_m_gen      = (vZ_genLep[0]+vZ_genLep[1]).M();
-	  /*WWTree->lepW1_pt_gen     = (v_genLep[0]+v_genLep[1]).Pt();
-	    WWTree->lepW1_eta_gen    = (v_genLep[0]+v_genLep[1]).Eta();
-	    WWTree->lepW1_phi_gen    = (v_genLep[0]+v_genNeutrino[0]).Phi();
-	    WWTree->lepW1_e_gen      = (v_genLep[0]+v_genNeutrino[0]).E();
-	    WWTree->lepW1_m_gen      = (v_genLep[0]+v_genNeutrino[0]).M();*/
-
 	  WZTree->lepW_pt_gen     = (vW_genLep[2]+v_genNeutrino[2]).Pt();
 	  WZTree->lepW_eta_gen    = (vW_genLep[2]+v_genNeutrino[2]).Eta();
 	  WZTree->lepW_phi_gen    = (vW_genLep[2]+v_genNeutrino[2]).Phi();
@@ -473,17 +418,13 @@ int main (int argc, char** argv)
 	  WZTree->AK4_jj_mass_gen = (v_genVBFquarks[0] + v_genVBFquarks[1]).M();
 
 	  WZTree->Zeppen1=abs(WZTree->WZ_eta_gen -(WZTree->AK4_1_eta_gen + WZTree->AK4_2_eta_gen)/2) ;
-	  //WZTree->Zeppen2=abs(WZTree->lep2_eta_gen -(WWTree->AK4_1_eta_gen + WWTree->AK4_2_eta_gen)/2)/WWTree->AK4_jj_DeltaEta_gen ;
-
 
 
 
 
 	  count_genEvents++;
-	}//loop13 ends
-	//cout<<"check3--all good"<<endl;
-
-	if ( WZTree->lep1_pt_gen > 25 && WZTree->lep2_pt_gen >15 && WZTree->lep3_pt_gen >25 && abs(WZTree->lep1_eta_gen) <2.5 && abs(WZTree->lep2_eta_gen) <2.5 && abs(WZTree->lep3_eta_gen) <2.5 && WZTree->dilep_m_gen >4 && WZTree->trilep_m_gen >100  && abs(WZTree->AK4_jj_DeltaEta_gen)>2.5 && WZTree->AK4_1_pt_gen >50 && WZTree->AK4_2_pt_gen>50 && abs(WZTree->AK4_1_eta_gen) <4.7 && abs(WZTree->AK4_2_eta_gen) <4.7 && WZTree->AK4_jj_mass_gen > 500   && abs((WZTree->dilep_m_gen) -91.2)<15 && WZTree->Zeppen1<2.5 ) 
+	}
+	if ( WZTree->lep1_pt_gen > 25 && WZTree->lep2_pt_gen >15 && WZTree->lep3_pt_gen >20 && ((abs(WZTree->lep1_eta_gen)) <2.5) && ((abs(WZTree->lep2_eta_gen)) <2.5) && ((abs(WZTree->lep3_eta_gen)) <2.5) && WZTree->dilep_m_gen >4 && WZTree->trilep_m_gen >100  && ((abs(WZTree->AK4_jj_DeltaEta_gen))>2.5) && WZTree->AK4_1_pt_gen >50 && WZTree->AK4_2_pt_gen>50 && ((abs(WZTree->AK4_1_eta_gen)) <4.7) && ((abs(WZTree->AK4_2_eta_gen)) <4.7) && WZTree->AK4_jj_mass_gen > 500   && ((abs((WZTree->dilep_m_gen) -91.2))<15) && WZTree->Zeppen1<2.5 ) 
 
 	{
 	  GenPassCut = 1;
@@ -491,7 +432,6 @@ int main (int argc, char** argv)
 	for (int i = 0; i<lheWgtArr->GetEntries();i++)     // Note that i is starting from 446.
 	{
 	  const baconhep::TLHEWeight *lhe = (baconhep::TLHEWeight*)((*lheWgtArr)[i]);
-	  //WWTree->LHEid[i] = lhe->id;
 	  WZTree->LHEWeight[i] = lhe->weight;
 	}
       }//loop14 ends
@@ -526,8 +466,6 @@ int main (int argc, char** argv)
       vertexArr->Clear();
       vertexBr->GetEntry(jentry);
       WZTree->nPV = vertexArr->GetEntries();
-      //cout<<"check4--all good"<<endl;
-
       //PILE-UP WEIGHT
       if (isMC==1) { //loop17 begins
 	if(int(info->nPUmean)<75){
@@ -544,8 +482,6 @@ int main (int argc, char** argv)
 	} 
       }//loop17 ends
 
-      //PILE-UP WEIGHT END
-
       if(applyTrigger==1)
 	if(!(triggerMenu.pass("HLT_IsoMu24_v*",info->triggerBits) || triggerMenu.pass("HLT_IsoTkMu24_v*",info->triggerBits) ||  triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits))) continue;
 
@@ -553,10 +489,8 @@ int main (int argc, char** argv)
       int nTightEle=0, nLooseEle=0;
       int nTightMu=0, nLooseMu=0;
       double pt_cut = 15;//pvrevious=25
-      double leadelept_cut = 20;
-      double leadmupt_cut = 20;
-      //  double sub
-      //electron part begins
+      double leadelept_cut = 15;
+      double leadmupt_cut = 15;
       electronArr->Clear();
       electronBr->GetEntry(jentry);
       const baconhep::TElectron *leadele = NULL;
@@ -589,13 +523,13 @@ int main (int argc, char** argv)
 	{
 	  subsubele =subele;
 	  subele = ele;
-	  subeleE = ELE.E();
+	  //subeleE = ELE.E();
 	  WZTree->l_iso2 = iso/ele->pt;
 	}
 	else if (!subsubele || ele->pt > subsubele->pt)
 	{
 	  subsubele = ele;
-	  subsubeleE = ELE.E();
+	  //subsubeleE = ELE.E();
 	  WZTree->l_iso3 = iso/ele->pt;
 	}
 
@@ -639,60 +573,49 @@ int main (int argc, char** argv)
 	else if (!subsubmu || mu->pt > subsubmu->pt)
 	{
 	  subsubmu = mu;
-	  subsubmue = MU.E();
+	  //  subsubmue = MU.E();
 	  WZTree->l_iso3 = iso/mu->pt;
 	}
 
       }   //loop on muon end
-
-      //if (!(nTightMu+nTightEle)==2) continue;
       //cout<<"Tight muons="<<nTightMu<<"Tight Electrons="<<nTightEle<<endl;
-      //cout<<nTightMu<<"==nTightMu"<<endl;
-      //cout<<nTightEle<<"==nTightEle"<<endl;
 
       if((nTightMu+nTightEle)==3)
       {
 	if (nTightMu==2 && nTightEle==1)
 	{
-	  if ( (leadmu->q > 0 && submu->q > 0) || (leadmu->q < 0 && submu->q <0)) continue;
+	  if ( (leadmu->q)*(submu->q) > 0 ) continue;
 
-	  if(leadmu)
-	  {
-	    WZTree->l_pt1  = leadmu->pt;
-	    WZTree->l_eta1 = leadmu->eta;
-	    WZTree->l_phi1 = leadmu->phi;	
-	    WZTree->l_e1 = leadmue;	
-	    WZTree->l_charge1 = leadmu->q;
-	    //cout<<"==> leadmu"<<endl;
-	  }
-	  if(submu)
-	  {
-	    WZTree->l_pt2  = submu->pt;
-	    WZTree->l_eta2 = submu->eta;
-	    WZTree->l_phi2 = submu->phi;	
-	    WZTree->l_e2 = submue;	
-	    WZTree->l_charge2 = submu->q;
-	    //cout<<"==> subleadmu"<<endl; 
-	  }
-	  if(leadele)
-	  {
-	    WZTree->l_pt3  = leadele->pt;
-	    WZTree->l_eta3 = leadele->eta;
-	    WZTree->l_phi3 = leadele->phi;
-	    WZTree->l_e3 = leadeleE;
-	    WZTree->l_charge3 = leadele->q;
-	    // cout<<leadele<<"==> subsubleadele"<<endl;
-	  }
+	  WZTree->l_pt1  = leadmu->pt;
+	  WZTree->l_eta1 = leadmu->eta;
+	  WZTree->l_phi1 = leadmu->phi;	
+	  WZTree->l_e1 = leadmue;	
+	  WZTree->l_charge1 = leadmu->q;
+	  //cout<<"==> leadmu"<<endl;
 
+	  WZTree->l_pt2  = submu->pt;
+	  WZTree->l_eta2 = submu->eta;
+	  WZTree->l_phi2 = submu->phi;	
+	  WZTree->l_e2 = submue;	
+	  WZTree->l_charge2 = submu->q;
+	  //cout<<"==> subleadmu"<<endl; 
+
+	  WZTree->l_pt3  = leadele->pt;
+	  WZTree->l_eta3 = leadele->eta;
+	  WZTree->l_phi3 = leadele->phi;
+	  WZTree->l_e3 = leadeleE;
+	  WZTree->l_charge3 = leadele->q;
+	  // cout<<leadele<<"==> leadele"<<endl;
 	}
+
 	else if (nTightMu==3)
 	{
 	  LEP1.SetPtEtaPhiE(leadmu->pt,leadmu->eta,leadmu->phi,leadmue);
 	  LEP2.SetPtEtaPhiE(submu->pt,submu->eta,submu->phi,submue);
 	  LEP3.SetPtEtaPhiE(subsubmu->pt,subsubmu->eta,subsubmu->phi,subsubmue);
-	  float chargel1 = 0.;
-	  float chargel2 = 0.;
-	  float chargel3 = 0.;
+	  int chargel1 = 0.;
+	  int chargel2 = 0.;
+	  int chargel3 = 0.;
 
 	  if (leadmu->q == subsubmu->q)
 	  {
@@ -799,7 +722,7 @@ int main (int argc, char** argv)
 
 	else if (nTightEle==2 && nTightMu==1)
 	{   
-	  if ( (leadele->q > 0 && subele->q > 0) || (leadele->q < 0 && subele->q <0)) continue;
+	  if ( (leadele->q)*(subele->q) > 0 ) continue;
 
 	  if(leadele)
 	  {
@@ -817,13 +740,13 @@ int main (int argc, char** argv)
 	    WZTree->l_e2 = subeleE;
 	    WZTree->l_charge2 = subele->q;
 	  }   //electron part ends
-	  if(subsubmu)
+	  if(leadmu)
 	  {
-	    WZTree->l_pt3  = subsubmu->pt;
-	    WZTree->l_eta3 = subsubmu->eta;
-	    WZTree->l_phi3 = subsubmu->phi;
-	    WZTree->l_e3 = subsubmue;
-	    WZTree->l_charge3 = subsubmu->q;
+	    WZTree->l_pt3  = leadmu->pt;
+	    WZTree->l_eta3 = leadmu->eta;
+	    WZTree->l_phi3 = leadmu->phi;
+	    WZTree->l_e3 = leadmue;
+	    WZTree->l_charge3 = leadmu->q;
 	  }
 
 
@@ -834,9 +757,9 @@ int main (int argc, char** argv)
 	  LEP1.SetPtEtaPhiE(leadele->pt,leadele->eta,leadele->phi,leadeleE);
 	  LEP2.SetPtEtaPhiE(subele->pt,subele->eta,subele->phi,subeleE);
 	  LEP3.SetPtEtaPhiE(subsubele->pt,subsubele->eta,subsubele->phi,subsubeleE);
-	  float chargel1 = 0.;
-	  float chargel2 = 0.;
-	  float chargel3 = 0.;
+	  int chargel1 = 0.;
+	  int chargel2 = 0.;
+	  int chargel3 = 0.;
 
 	  if (leadele->q == subsubele->q)
 	  {
@@ -923,9 +846,11 @@ int main (int argc, char** argv)
 	  WZTree->l_phi3 = LEP3.Phi();
 	  WZTree->l_e3 = LEP3.M();
 	  WZTree->l_charge3 = chargel3;
-	  //cout<<LEP1.Pt(),LEP2.Pt(),LEP3.Pt();
+
 	}
 	//cout<<WZTree->l_pt1;
+
+
 
       }
 
@@ -935,60 +860,9 @@ int main (int argc, char** argv)
       if ((nTightMu+nTightEle)<3) continue;
       if((nLooseEle+nLooseMu)>3) continue;
       //cout<<"nLooseEle+nLooseMu =  "<<nLooseEle+nLooseMu<<endl;
-      //   if(nTightMu>1 && nLooseEle>1) continue;                                                                                                 
-      //   if(nTightEle>1 && nLooseMu>1) continue;                                                                                                   
-      //   if(nTightMu==1 && nLooseMu>1) continue;
-      //   if(nTightEle==1 && nLooseEle>1) continue;
-      //
-
-      //    if(!(WWTree->l_pt1>0)&&(WWTree->l_pt2>0)) continue;
-
-      //cout<<"check51--all good"<<endl;
       cutEff[2]++;
 
-      /*   if(nTightMu>0){
-	   WWTree->type=0;
-	   leptonName = "mu";	
-	   }else{
-	   WWTree->type=1;
-	   leptonName = "el";
-	   }*/
-      //cout<<"check52--all good"<<endl;  
 
-      /*
-	 if(((WZTree->l_charge1 >0 &&  WZTree->l_charge2 <0) || (WZTree->l_charge1 <0 && WZTree->l_charge2 >0)) && ((WZTree->l_charge1>0 && WZTree->l_charge3>0) || (WZTree->l_charge2<0 && WZTree->l_charge3<0) || (WZTree->l_charge1<0 && WZTree->l_charge3<0) || (WZTree->l_charge2>0 && WZTree->l_charge3>0)))
-
-	 {
-	 LEPZ1.SetPtEtaPhiE(WZTree->l_pt1,WZTree->l_eta1,WZTree->l_phi1,WZTree->l_e1);
-	 LEPZ2.SetPtEtaPhiE(WZTree->l_pt2,WZTree->l_eta2,WZTree->l_phi2,WZTree->l_e2);
-	 LEPW.SetPtEtaPhiE(WZTree->l_pt3,WZTree->l_eta3,WZTree->l_phi3,WZTree->l_e3);
-	 }
-
-	 else if (((WZTree->l_charge3 >0 &&  WZTree->l_charge2 <0) || (WZTree->l_charge3 <0 && WZTree->l_charge2 >0)) && ((WZTree->l_charge1>0 && WZTree->l_charge3>0) || (WZTree->l_charge2<0 && WZTree->l_charge1<0) || (WZTree->l_charge1<0 && WZTree->l_charge3<0) || (WZTree->l_charge2>0 && WZTree->l_charge1>0)))
-
-	 {
-	 LEPZ1.SetPtEtaPhiE(WZTree->l_pt1,WZTree->l_eta1,WZTree->l_phi1,WZTree->l_e1);
-	 LEPZ2.SetPtEtaPhiE(WZTree->l_pt3,WZTree->l_eta3,WZTree->l_phi3,WZTree->l_e3);
-	 LEPW.SetPtEtaPhiE(WZTree->l_pt2,WZTree->l_eta2,WZTree->l_phi2,WZTree->l_e2);
-	 }
-
-	 else if (((WZTree->l_charge1 >0 &&  WZTree->l_charge3 <0) || (WZTree->l_charge1 <0 && WZTree->l_charge3 >0)) && ((WZTree->l_charge1>0 && WZTree->l_charge2>0) || (WZTree->l_charge2<0 && WZTree->l_charge3<0) || (WZTree->l_charge1<0 && WZTree->l_charge2<0) || (WZTree->l_charge2>0 && WZTree->l_charge3>0)))
-
-	 {
-	 LEPZ1.SetPtEtaPhiE(WZTree->l_pt2,WZTree->l_eta2,WZTree->l_phi2,WZTree->l_e2);
-	 LEPZ2.SetPtEtaPhiE(WZTree->l_pt3,WZTree->l_eta3,WZTree->l_phi3,WZTree->l_e3);
-	 LEPW.SetPtEtaPhiE(WZTree->l_pt1,WZTree->l_eta1,WZTree->l_phi1,WZTree->l_e1);
-	 }
-
-
-	 LEP1.SetPtEtaPhiE(WZTree->l_pt1,WZTree->l_eta1,WZTree->l_phi1,WZTree->l_e1);
-	 LEP2.SetPtEtaPhiE(WZTree->l_pt2,WZTree->l_eta2,WZTree->l_phi2,WZTree->l_e2);
-	 LEP3.SetPtEtaPhiE(WZTree->l_pt3,WZTree->l_eta3,WZTree->l_phi3,WZTree->l_e3);
-
-	 if( (abs((WZTree->LEPZ1+LEPZ2) - Zmass)
-
-	 ....................geet
-	 */
 
       if(WZTree->l_pt1>0&&WZTree->l_pt2>0&&WZTree->l_pt3>0)
       {
@@ -997,7 +871,7 @@ int main (int argc, char** argv)
 	WZTree->dilep_phi = (LEP1+LEP2).Phi();	
 	WZTree->dilep_m = (LEP1+LEP2).M();
       }
-      //cout<<"check53--all good"<<endl;
+
 
       if(WZTree->dilep_m <4) continue;
       cutEff[3]++;
@@ -1010,17 +884,12 @@ int main (int argc, char** argv)
 	WZTree->trilep_m = (LEP1+LEP2+LEP3).M();
       }
       //    cout<<"trilep_m =   "<<WZTree->trilep_m<<endl;
-      //cout<<"check53--all good"<<endl;
-      //
-
-      float Zmass = 91.2;
-      //cout<<"check54--all good"<<endl;
-      if( (abs((WZTree->trilep_m) - Zmass) > 15))	continue;
-      //cout<<"check55--all good"<<endl;
+      if(WZTree->trilep_m <100) continue;
       cutEff[4]++;
+      float Zmass = 91.2;
+      if( (abs((WZTree->trilep_m) - Zmass)) > 15)	continue;
+      cutEff[5]++;
       //cout<<"X    "<<(abs((WZTree->trilep_m) - Zmass))<<endl;
-      //cout<<"check6--all good"<<endl;
-
 
       //ID & GSF efficiency SF for electrons (https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#Electron_efficiencies_and_scale)
       if (strcmp(leptonName.c_str(),"el")==0 && isMC==1) {//loop 3 begins
@@ -1029,22 +898,19 @@ int main (int argc, char** argv)
 
 	// apply GSF/RECO SF's for electrons
 	WZTree->id_eff_Weight = WZTree->id_eff_Weight*GetSFs_Lepton(WZTree->l_pt1, WZTree->l_eta1, hGSFCorrEle);
-	WZTree->trig_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, WZTree->l_eta1, hTriggerEle);
+	WZTree->trig_eff_Weight = 1.0/GetSFs_Lepton(WZTree->l_pt1, WZTree->l_eta1, hTriggerEle);
 
-	//	if(WWTree->l_pt2>0){
-	//  apply ID, ISO SF's
 	WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, WZTree->l_eta2, hIDIsoEle);	// Get Scale factor corresponding to the pt and eta.
 
 	// apply GSF/RECO SF's for electrons
 	WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, WZTree->l_eta2, hGSFCorrEle);
-	WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, WZTree->l_eta2, hTriggerEle);
+	WZTree->trig_eff_Weight2 = 1.0/GetSFs_Lepton(WZTree->l_pt2, WZTree->l_eta2, hTriggerEle);
 
 	WZTree->id_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, WZTree->l_eta3, hIDIsoEle);       // Get Scale factor corresponding to the pt and eta.
 
 	// apply GSF/RECO SF's for electrons
 	WZTree->id_eff_Weight3 = WZTree->id_eff_Weight3*GetSFs_Lepton(WZTree->l_pt3, WZTree->l_eta3, hGSFCorrEle);
-	WZTree->trig_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, WZTree->l_eta3, hTriggerEle);
-	//                 //	}
+	WZTree->trig_eff_Weight3 = 1.0/GetSFs_Lepton(WZTree->l_pt3, WZTree->l_eta3, hTriggerEle);
       }//loop 3 ends
 
       //ID&ISO efficiency SF for muons (https://twiki.cern.ch/twiki/bin/view/CMS/MuonWorkInProgressAndPagResults)
@@ -1052,36 +918,38 @@ int main (int argc, char** argv)
 	//  apply ID SF's
 	if (WZTree->run<278820){
 	  WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIDMuA);
-	  if (WZTree->l_pt2>0) WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIDMuA);}
+	  WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIDMuA);
+	  WZTree->id_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIDMuA);}
 	else{
 	  WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIDMuB);
-	  if (WZTree->l_pt2>0) WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIDMuB);}
+	  WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIDMuB);
+	  WZTree->id_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIDMuB);}
 
 	//  apply ISO SF's
 	if (WZTree->run<278820){
 	  WZTree->id_eff_Weight = WZTree->id_eff_Weight*GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIsoMuA);
-	  WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIsoMuA);}
+	  WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIsoMuA);
+	  WZTree->id_eff_Weight3 = WZTree->id_eff_Weight3*GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIsoMuA);}
 	else{
 	  WZTree->id_eff_Weight = WZTree->id_eff_Weight*GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIsoMuB);
-	  WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIsoMuB);}
-
+	  WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIsoMuB);
+	  WZTree->id_eff_Weight3 = WZTree->id_eff_Weight3*GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIsoMuB);}
 	// apply Trigger SF's
 	if (WZTree->run<278820){
 	  WZTree->trig_eff_Weight  = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hTriggerMuA);
-	  WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuA);}
+	  WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuA);
+	  WZTree->trig_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hTriggerMuA);}
 	else{
 	  WZTree->trig_eff_Weight  = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hTriggerMuB);
-	  WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuB);}
+	  WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuB);
+	  WZTree->trig_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hTriggerMuB);}
       } //loop4 ends
 
       //////////////THE MET
 
       // //preselection on met
       if (info->pfMETC < 30) continue;   //Et(miss)>40GeV
-      // if ((WWTree->l_pt1>0)&&(WWTree->l_pt2>0))
-      cutEff[5]++;
-      //cout<<"MET  "<<info->pfMETC<<endl; // cout<<"check7--all good"<<endl;
-
+      cutEff[6]++;
 
       TLorentzVector W_Met;
       WZTree->pfMET_Corr = info->pfMETC;
@@ -1138,32 +1006,21 @@ int main (int argc, char** argv)
       jetArr->Clear();
       jetBr->GetEntry(jentry);
       for ( int i=0; i<jetArr->GetEntries(); i++){ //loop on AK4 jet
-        //loop r begins
+	//loop r begins
 	const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[i]);
 	bool isCleaned = true;
-	//   bool isCleanedFromFatJet = true;
-	//28feb        double unc = func(jet->pt, jet->eta, fJetUnc_AK4chs); 
-	// calculate Up variation
-	//28feb	VBF1_jes_up.SetPtEtaPhiM((1.+unc)*jet->pt, jet->eta, jet->phi, (1.+unc)*jet->mass);	
-	// calculate Down variation
-	//28feb	VBF1_jes_dn.SetPtEtaPhiM((1.-unc)*jet->pt, jet->eta, jet->phi, (1.-unc)*jet->mass);	
 
-	if (jet->pt<=30) continue;
+	if (jet->pt<=50) continue;
 	if (!passJetLooseSel(jet)) continue;
 
 	//fill B-Tag info
 
-	if (fabs(jet->eta) < 2.4 && jet->pt>30){
+	if (fabs(jet->eta) < 2.4 && jet->pt>50){
 	  if (jet->csv>0.5426)  WZTree->nBTagJet_loose++;
 	  if (jet->csv>0.8484)  WZTree->nBTagJet_medium++;
 	  if (jet->csv>0.9535)  WZTree->nBTagJet_tight++;
 
-	  goodJetsv.push_back(jet);
 	}
-	//if (WWTree->nBTagJet_medium>0) continue;
-
-	//  if (jet->csv>0.8484)   continue;
-	//CLEANING FROM LEPTONS
 	for ( std::size_t j=0; j<tightEle.size(); j++) {
 	  if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
 		jet->eta,   jet->phi) < 0.3) {
@@ -1179,8 +1036,8 @@ int main (int argc, char** argv)
 
 	if (isCleaned==false) continue;
 	//    if (isCleanedFromFatJet==false) continue;
-	if (fabs(jet->eta)>=4.7) continue;//2.4 check change
-	if (jet->pt<=30) continue;
+	if (fabs(jet->eta)>=5.0) continue;//2.4 check change
+	if (jet->pt<=50) continue;
 	//if (jet->csv>0.8484) continue;
 	indexGoodVBFJets.push_back(i); //save index of the "good" vbf jets candidates
 
@@ -1194,13 +1051,9 @@ int main (int argc, char** argv)
 	//------------------------------
 	// !!! VBF non-Puppi missing !!!
 	//------------------------------
-      }//loop r ends
-      //	cout<<"check8--all good"<<indexGoodVBFJets.size()<<endl;
-      //=========================================================================================================================================================================================================================================================================================================================================================================
-      //	if (WWTree->nBTagJet_medium>0) continue;
+      }
       if (indexGoodVBFJets.size()<2) continue;
-      //if (WZTree->nBTagJet_medium>=1) continue;
-      cutEff[6]++;
+      cutEff[7]++;
       if (indexGoodVBFJets.size()>=2) 
       {//loop y begins
 
@@ -1213,21 +1066,11 @@ int main (int argc, char** argv)
 	  for ( std::size_t ii=i+1; ii<indexGoodVBFJets.size(); ii++) {//loop q 
 	    const baconhep::TJet *jet1 = (baconhep::TJet*)((*jetArr)[indexGoodVBFJets.at(i)]);
 	    const baconhep::TJet *jet2 = (baconhep::TJet*)((*jetArr)[indexGoodVBFJets.at(ii)]);
-	    if (jet1->pt < 30) continue;
-	    if (jet2->pt < 30) continue;
+	    if (jet1->pt < 50) continue;
+	    if (jet2->pt < 50) continue;
 	    VBF1.SetPtEtaPhiM(jet1->pt,jet1->eta,jet1->phi,jet1->mass);
 	    VBF2.SetPtEtaPhiM(jet2->pt,jet2->eta,jet2->phi,jet2->mass);
 	    TOT = VBF1 + VBF2;
-
-	    // calculate Up/Down variation for leading jet
-	    //28feb     double unc1 = func(jet1->pt, jet1->eta, fJetUnc_AK4chs); 
-	    //28feb	  VBF1_jes_up.SetPtEtaPhiM((1.+unc1)*jet1->pt, jet1->eta, jet1->phi, (1.+unc1)*jet1->mass);	
-	    //28feb	  VBF1_jes_dn.SetPtEtaPhiM((1.-unc1)*jet1->pt, jet1->eta, jet1->phi, (1.-unc1)*jet1->mass);	
-
-	    // calculate Up/Down variation for sub-leading jet
-	    //28feb    double unc2 = func(jet2->pt, jet2->eta, fJetUnc_AK4chs); 
-	    //28feb	  VBF2_jes_up.SetPtEtaPhiM((1.+unc2)*jet2->pt, jet2->eta, jet2->phi, (1.+unc2)*jet2->mass);	
-	    //28feb	  VBF2_jes_dn.SetPtEtaPhiM((1.-unc2)*jet2->pt, jet2->eta, jet2->phi, (1.-unc2)*jet2->mass);	
 
 	    //if (TOT.M()<500) continue;
 	    if ( VBFSel==1)
@@ -1286,58 +1129,18 @@ int main (int argc, char** argv)
 	  WZTree->vbf_maxpt_j2_mass = VBF2.M();
 	  WZTree->vbf_maxpt_j2_bDiscriminatorCSV = jet2->csv;
 	  WZTree->vbf_maxpt_j2_charge = jet2->q;
-	  //cout<<"check9--all good"<<endl;
-
-	  // calculate Up/Down variation for leading jet
-	  //28feb        double unc1 = func(jet1->pt, jet1->eta, fJetUnc_AK4chs); 
-	  //28feb	VBF1_jes_up.SetPtEtaPhiM((1.+unc1)*jet1->pt, jet1->eta, jet1->phi, (1.+unc1)*jet1->mass);	
-	  //28feb	VBF1_jes_dn.SetPtEtaPhiM((1.-unc1)*jet1->pt, jet1->eta, jet1->phi, (1.-unc1)*jet1->mass);	
-
-	  // calculate Up/Down variation for sub-leading jet
-	  //28feb        double unc2 = func(jet2->pt, jet2->eta, fJetUnc_AK4chs); 
-	  //28feb	VBF2_jes_up.SetPtEtaPhiM((1.+unc2)*jet2->pt, jet2->eta, jet2->phi, (1.+unc2)*jet2->mass);
-	  //28feb	VBF2_jes_dn.SetPtEtaPhiM((1.-unc2)*jet2->pt, jet2->eta, jet2->phi, (1.-unc2)*jet2->mass);	
-	  //28feb
-	  /*	WWTree->vbf_maxpt_j1_pt_jes_up 	= VBF1_jes_up.Pt();
-		WWTree->vbf_maxpt_j1_eta_jes_up = VBF1_jes_up.Eta();
-		WWTree->vbf_maxpt_j1_phi_jes_up = VBF1_jes_up.Phi();
-		WWTree->vbf_maxpt_j1_mass_jes_up= VBF1_jes_up.M();
-		WWTree->vbf_maxpt_j1_pt_jes_dn 	= VBF1_jes_dn.Pt();
-		WWTree->vbf_maxpt_j1_eta_jes_dn = VBF1_jes_dn.Eta();
-		WWTree->vbf_maxpt_j1_phi_jes_dn = VBF1_jes_dn.Phi();
-		WWTree->vbf_maxpt_j1_mass_jes_dn= VBF1_jes_dn.M();
-
-		WWTree->vbf_maxpt_j2_pt_jes_up 	= VBF2_jes_up.Pt();
-		WWTree->vbf_maxpt_j2_eta_jes_up = VBF2_jes_up.Eta();
-		WWTree->vbf_maxpt_j2_phi_jes_up = VBF2_jes_up.Phi();
-		WWTree->vbf_maxpt_j2_mass_jes_up= VBF2_jes_up.M();
-		WWTree->vbf_maxpt_j2_pt_jes_dn 	= VBF2_jes_dn.Pt();
-		WWTree->vbf_maxpt_j2_eta_jes_dn = VBF2_jes_dn.Eta();
-		WWTree->vbf_maxpt_j2_phi_jes_dn = VBF2_jes_dn.Phi();
-		WWTree->vbf_maxpt_j2_mass_jes_dn= VBF2_jes_dn.M();*/
-
 	  WZTree->vbf_maxpt_jj_pt = TOT.Pt();
 	  //cout<<"X  "<< WZTree->vbf_maxpt_jj_pt<<endl;
-	  //28feb        WWTree->vbf_maxpt_jj_pt_jes_up = (VBF1_jes_up + VBF2_jes_up).Pt();
-	  //28feb        WWTree->vbf_maxpt_jj_pt_jes_dn = (VBF1_jes_dn + VBF2_jes_dn).Pt();
 
 	  WZTree->vbf_maxpt_jj_eta = TOT.Eta();
 	  WZTree->vbf_maxpt_jj_phi = TOT.Phi();
 
 	  WZTree->vbf_maxpt_jj_m = TOT.M();	
-	  cout<<"maxpt of VBF    "<<WZTree->vbf_maxpt_jj_m<<endl;
-	  //28feb        WWTree->vbf_maxpt_jj_m_jes_up = (VBF1_jes_up + VBF2_jes_up).M();
-	  //28feb        WWTree->vbf_maxpt_jj_m_jes_dn = (VBF1_jes_dn + VBF2_jes_dn).M();
+	  //cout<<"maxpt of VBF    "<<WZTree->vbf_maxpt_jj_m<<endl;
 
 	  WZTree->vbf_maxpt_jj_Deta = abs(VBF1.Eta() - VBF2.Eta());
-	  cout<<"Z  "<< WZTree->vbf_maxpt_jj_Deta<<endl;
-	  //28feb	WWTree->vbf_maxpt_jj_Deta_jes_up = abs(VBF1_jes_up.Eta() - VBF2_jes_up.Eta());
-	  //28feb	WWTree->vbf_maxpt_jj_Deta_jes_dn = abs(VBF1_jes_dn.Eta() - VBF2_jes_dn.Eta());
+	  //cout<<"Z  "<< WZTree->vbf_maxpt_jj_Deta<<endl;
 
-	  //28feb	WWTree->AK4_DR_GENRECO_11 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
-	  //28feb	WWTree->AK4_DR_GENRECO_12 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
-	  //28feb	WWTree->AK4_DR_GENRECO_21 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
-	  //28feb	WWTree->AK4_DR_GENRECO_22 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
 	}//loop x ends
       }//loop y ends
       indexGoodVBFJets.clear();
@@ -1345,52 +1148,17 @@ int main (int argc, char** argv)
       ///////////////////////////////////////////////////////////////////////////////////////
       if (OnlyTwoVBFTypeJets == 1) WZTree->isVBF=1;
       if (OnlyTwoVBFTypeJets == 0 ) continue;
-      cutEff[7]++;
-      cout<<"X  "<<OnlyTwoVBFTypeJets<<endl;
-      //   if (WZTree->vbf_maxpt_jj_m<500)  continue;
+      cutEff[8]++;
+      //    cout<<"X  "<<OnlyTwoVBFTypeJets<<endl;
+      //  if (WZTree->vbf_maxpt_jj_m<500)  continue;
       //if (WWTree->vbf_maxpt_jj_Deta  <2.5) continue;
       // if (WWTree->l_pt2<0) 
-      cutEff[8]++;
-      cout<<"DEBUG: 1: maxpt of VBF    "<<WZTree->vbf_maxpt_jj_m<<endl;
-      //cout<<"check10-all good"<<endl;
+      //cutEff[9]++;
+      //      cout<<"DEBUG: 1: maxpt of VBF    "<<WZTree->vbf_maxpt_jj_m<<endl;
 
-      // else cutEff[18]++;
-      /////////////////////////////////////////////////////////////////////////////////////////
-      //
-      //		Calculate b-tag weight
-      //		
-      /////////////////////////////////////////////////////////////////////////////////////////
-      //28feb
-      /*   vector<float> btagSFv       = getJetSFs(goodJetsv, bTagReader, "central", "central");
-	   vector<float> btagSFUpHFv   = getJetSFs(goodJetsv, bTagReader, "up",      "central");
-	   vector<float> btagSFDownHFv = getJetSFs(goodJetsv, bTagReader, "down",    "central");
-	   vector<float> btagSFUpLFv   = getJetSFs(goodJetsv, bTagReader, "central", "up");
-	   vector<float> btagSFDownLFv = getJetSFs(goodJetsv, bTagReader, "central", "down"); 
 
-	   WWTree->btag0Wgt       = getBtagEventReweightEtaBin(0, goodJetsv, btagSFv);
-	   WWTree->btag1Wgt       = getBtagEventReweightEtaBin(1, goodJetsv, btagSFv);
-	   WWTree->btag2Wgt       = getBtagEventReweightEtaBin(2, goodJetsv, btagSFv);
+      WZTree->totalEventWeight = WZTree->pu_Weight*WZTree->trig_eff_Weight*WZTree->id_eff_Weight*WZTree->trig_eff_Weight2*WZTree->id_eff_Weight2*WZTree->trig_eff_Weight3*WZTree->id_eff_Weight3;
 
-	   if (isnan(WWTree->btag0Wgt) == 1 || WWTree->btag0Wgt == 0) { 
-	   cout<<"********************* btag weight is nan"<<endl;
-
-	   }
-
-	   WWTree->btag0WgtUpHF   = getBtagEventReweightEtaBin(0, goodJetsv, btagSFUpHFv);
-	   WWTree->btag0WgtDownHF = getBtagEventReweightEtaBin(0, goodJetsv, btagSFDownHFv);
-	   WWTree->btag0WgtUpLF   = getBtagEventReweightEtaBin(0, goodJetsv, btagSFUpLFv);
-	   WWTree->btag0WgtDownLF = getBtagEventReweightEtaBin(0, goodJetsv, btagSFDownLFv);
-	   WWTree->btag1WgtUpHF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpHFv);
-	   WWTree->btag1WgtDownHF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownHFv);
-	   WWTree->btag1WgtUpLF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpLFv);
-	   WWTree->btag1WgtDownLF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownLFv);
-
-	   btagSFv.clear();	btagSFUpHFv.clear();	btagSFDownHFv.clear();
-	   btagSFUpLFv.clear();	btagSFDownLFv.clear();
-      /////////////////////////////////////////////////////////////////////////////////////////	END btag weight calculation
-
-      WWTree->totalEventWeight_2Lep = WWTree->genWeight*WWTree->pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight*WWTree->id_eff_Weight*WWTree->trig_eff_Weight2*WWTree->id_eff_Weight2;
-      */
 
       WZTree->nEvents = TotalNumberOfEvents;
       WZTree->nNegEvents = nNegEvents;
@@ -1398,24 +1166,19 @@ int main (int argc, char** argv)
       WZTree->nTotNegEvents = std::atof(TotalNumberOfNegativeEntries.c_str());
 
       //if(VBF1.
-//      if (fabs(VBF1.Eta() - VBF2.Eta())  < 2.5) continue;
+      //if (fabs(VBF1.Eta() - VBF2.Eta())  < 2.5) continue;
+      //  cutEff[10]++;
+      //     cout<<"Y   "<<fabs(VBF1.Eta() - VBF2.Eta())<<endl;
+
+      WZTree->ZeppenfeldW1 =((LEP1.Eta()+LEP2.Eta()+LEP3.Eta()) - ((VBF1.Eta() + VBF2.Eta())/2.0));
+      if ((abs(WZTree->ZeppenfeldW1)) >2.5) continue;
+
       cutEff[9]++;
-      cout<<"Y   "<<fabs(VBF1.Eta() - VBF2.Eta())<<endl;
-
-//      WZTree->ZeppenfeldW1 =abs((LEP1.Eta()+LEP2.Eta()+LEP3.Eta()) - (VBF1.Eta() + VBF2.Eta())/2.0);
-      //WZTree->ZeppenfeldW2 =abs(LEP2.Eta() - (VBF1.Eta() + VBF2.Eta())/2.0)/abs(VBF1.Eta() - VBF2.Eta());
-
-
-
-  //    if (abs(WZTree->ZeppenfeldW1) >2.5) continue;
-
-    //  cutEff[10]++;
 
 
       outTree->Fill();
-cout<<"DEBUG: 2:" << endl;
-      goodJetsv.clear();
-cout<<"DEBUG: 3:" << endl;
+      //cout<<"DEBUG: 2:" << endl;
+      //cout<<"DEBUG: 3:" << endl;
     }//loop on entries end
     delete infile;
     infile=0, eventTree=0;
@@ -1445,14 +1208,15 @@ cout<<"DEBUG: 3:" << endl;
     <<"(1) Gen Events:        "<<cutEff[1]<<"\t:\t"<<((float)cutEff[1]*100.0)/(float)cutEff[0]<<std::endl
     <<"(2) tight lepton:      "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
     <<"(3) DileptonMass:               "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
-    <<"(4) (Dilepton-Z)Mass:  "<<cutEff[4]<<"\t:\t"<<((float)cutEff[4]*100.0)/(float)cutEff[3]<<std::endl
-    <<"(5) MET:               "<<cutEff[5]<<"\t:\t"<<((float)cutEff[5]*100.0)/(float)cutEff[4]<<std::endl
-    <<"(6) >=2 good VBF jets: "<<cutEff[6]<<"\t:\t"<<((float)cutEff[6]*100.0)/(float)cutEff[5]<<std::endl
-    <<"(7) =2 VBF jets      : "<<cutEff[7]<<"\t:\t"<<((float)cutEff[7]*100.0)/(float)cutEff[6]<<std::endl
-    <<"(8) Highest pt VBF jets with mjj>500:  "<<cutEff[8]<<"\t:\t"<<((float)cutEff[8]*100.)/(float)cutEff[7]<<std::endl
-    <<"(9) Events with VBFjets delta eta>2.5"<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.)/(float)cutEff[8]<<std::endl
-    <<"(9) ZeppenCut:                       "<<cutEff[10]<<"\t:\t"<<((float)cutEff[10]*100.)/(float)cutEff[9]<<std::endl;
-  std::cout << "Yield =  " << cutEff[10]*weight*35900<<endl;
+    <<"(4) trileptonMass:               "<<cutEff[4]<<"\t:\t"<<((float)cutEff[4]*100.0)/(float)cutEff[3]<<std::endl
+    <<"(5) (Trilepton-Z)Mass:  "<<cutEff[5]<<"\t:\t"<<((float)cutEff[5]*100.0)/(float)cutEff[4]<<std::endl
+    <<"(6) MET:               "<<cutEff[6]<<"\t:\t"<<((float)cutEff[6]*100.0)/(float)cutEff[5]<<std::endl
+    <<"(7) >=2 good VBF jets: "<<cutEff[7]<<"\t:\t"<<((float)cutEff[7]*100.0)/(float)cutEff[6]<<std::endl
+    <<"(8) =2 VBF jets      : "<<cutEff[8]<<"\t:\t"<<((float)cutEff[8]*100.0)/(float)cutEff[7]<<std::endl
+    //<<"(9) Highest pt VBF jets with mjj>500:  "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.)/(float)cutEff[8]<<std::endl
+    //<<"(10) Events with VBFjets delta eta>2.5"<<cutEff[10]<<"\t:\t"<<((float)cutEff[10]*100.)/(float)cutEff[9]<<std::endl
+    <<"(9) ZeppenCut:                       "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.)/(float)cutEff[8]<<std::endl;
+  std::cout << "Yield =  " << cutEff[9]*0.00128*WZTree->totalEventWeight<<endl;
   //--------close everything-------------
   delete info; delete gen;
   delete genPartArr; delete muonArr; delete electronArr; delete vertexArr;
