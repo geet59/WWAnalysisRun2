@@ -488,9 +488,9 @@ int main (int argc, char** argv)
       /////////////////THE SELECTED LEPTON
       int nTightEle=0, nLooseEle=0;
       int nTightMu=0, nLooseMu=0;
-      double pt_cut = 20;//pvrevious=25
-      double leadelept_cut = 20;
-      double leadmupt_cut = 20;
+      double pt_cut = 15;//pvrevious=25
+      double leadelept_cut = 15;
+      double leadmupt_cut = 15;
       electronArr->Clear();
       electronBr->GetEntry(jentry);
       const baconhep::TElectron *leadele = NULL;
