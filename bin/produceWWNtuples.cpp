@@ -209,7 +209,7 @@ int main (int argc, char** argv)
 
   int nInputFiles = sampleName.size();
 
-  if (isLocal==1) nInputFiles = 5;
+  if (isLocal==1) nInputFiles = 1;
   cout<<"==> Total number of input files : "<<nInputFiles<<endl;
 
   TH1D *MCpu = new TH1D("MCpu","",75,0,75);
@@ -488,9 +488,9 @@ int main (int argc, char** argv)
       /////////////////THE SELECTED LEPTON
       int nTightEle=0, nLooseEle=0;
       int nTightMu=0, nLooseMu=0;
-      double pt_cut = 15;//pvrevious=25
-      double leadelept_cut = 15;
-      double leadmupt_cut = 15;
+      double pt_cut = 20;//pvrevious=25
+      double leadelept_cut = 20;
+      double leadmupt_cut = 20;
       electronArr->Clear();
       electronBr->GetEntry(jentry);
       const baconhep::TElectron *leadele = NULL;
@@ -887,7 +887,7 @@ int main (int argc, char** argv)
       if(WZTree->trilep_m <100) continue;
       cutEff[4]++;
       float Zmass = 91.2;
-      if( (abs((WZTree->trilep_m) - Zmass)) > 15)	continue;
+      if( (abs((WZTree->dilep_m) - Zmass)) > 15)	continue;
       cutEff[5]++;
       //cout<<"X    "<<(abs((WZTree->trilep_m) - Zmass))<<endl;
 
@@ -1209,14 +1209,14 @@ int main (int argc, char** argv)
     <<"(2) tight lepton:      "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
     <<"(3) DileptonMass:               "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
     <<"(4) trileptonMass:               "<<cutEff[4]<<"\t:\t"<<((float)cutEff[4]*100.0)/(float)cutEff[3]<<std::endl
-    <<"(5) (Trilepton-Z)Mass:  "<<cutEff[5]<<"\t:\t"<<((float)cutEff[5]*100.0)/(float)cutEff[4]<<std::endl
+    <<"(5) (Dilepton-ZMass):  "<<cutEff[5]<<"\t:\t"<<((float)cutEff[5]*100.0)/(float)cutEff[4]<<std::endl
     <<"(6) MET:               "<<cutEff[6]<<"\t:\t"<<((float)cutEff[6]*100.0)/(float)cutEff[5]<<std::endl
     <<"(7) >=2 good VBF jets: "<<cutEff[7]<<"\t:\t"<<((float)cutEff[7]*100.0)/(float)cutEff[6]<<std::endl
     <<"(8) =2 VBF jets      : "<<cutEff[8]<<"\t:\t"<<((float)cutEff[8]*100.0)/(float)cutEff[7]<<std::endl
     //<<"(9) Highest pt VBF jets with mjj>500:  "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.)/(float)cutEff[8]<<std::endl
     //<<"(10) Events with VBFjets delta eta>2.5"<<cutEff[10]<<"\t:\t"<<((float)cutEff[10]*100.)/(float)cutEff[9]<<std::endl
     <<"(9) ZeppenCut:                       "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.)/(float)cutEff[8]<<std::endl;
-  std::cout << "Yield =  " << cutEff[9]*0.00128*WZTree->totalEventWeight<<endl;
+  //std::cout << "Yield =  " << cutEff[9]*0.00128*WZTree->totalEventWeight<<endl;
   //--------close everything-------------
   delete info; delete gen;
   delete genPartArr; delete muonArr; delete electronArr; delete vertexArr;
