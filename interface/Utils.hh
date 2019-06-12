@@ -91,7 +91,6 @@ template<class T> void addVetoV(std::vector<T*> &iObjects,std::vector<TLorentzVe
 
 #define addElectron  addObject<baconhep::TElectron>
 #define addMuon      addObject<baconhep::TMuon>
-#define addTau       addObject<baconhep::TTau>
 #define addJet       addObject<baconhep::TJet>
 #define addPhoton    addObject<baconhep::TPhoton>
 
