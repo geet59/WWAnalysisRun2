@@ -83,6 +83,7 @@ int main (int argc, char** argv)
   if ( VBFSel==1)	cout<<"==> VBF selection method : Select two highest pT jets"<<endl;
   else if ( VBFSel==2)	cout<<"==> VBF selection method : Select pair with highest mjj..."<<endl;
   else if ( VBFSel==3)	cout<<"==> VBF selection method : Select pair with highest DeltaEta..."<<endl;
+ // else if ( VBFSel==4)	cout<<"==> VBF selection method : Select two highest pT jets..."<<endl;
   else {	cout<<"\n\nERROR:	Enter valid vbf selection criteria....\n\n"<<endl;
     exit(0);  
   }
@@ -211,7 +212,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 
   int nInputFiles = sampleName.size();
 
-  if (isLocal==1) nInputFiles = -1;
+  if (isLocal==1) nInputFiles = 1;
   cout<<"==> Total number of input files : "<<nInputFiles<<endl;
 
   TH1D *MCpu = new TH1D("MCpu","",75,0,75);
@@ -306,6 +307,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
     for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
     {
       infoBr->GetEntry(jentry);	    
+//if	(jentry2>100) exit(0);
 
 
       int GenPassCut = 0;
@@ -549,7 +551,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
       for(Int_t i=0; i<muonArr->GetEntries(); i++) { //loop on muon begins
 	const baconhep::TMuon *mu = (baconhep::TMuon*)((*muonArr)[i]);
 	if (mu->pt<pt_cut) continue;
-	if (fabs(mu->eta)>=2.5) continue;
+	if (fabs(mu->eta)>=2.4) continue;
 	if(!passMuonLooseSel(mu)) continue;
 	nLooseMu++;
 	if(!passMuonTightSel(mu)) continue;
@@ -582,8 +584,10 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
       }   //loop on muon end
       //cout<<"Tight muons="<<nTightMu<<"Tight Electrons="<<nTightEle<<endl;
 
-      if((nTightMu+nTightEle)==3)
-      {
+       if ((nTightMu+nTightEle)<3) continue;
+         if((nLooseEle+nLooseMu)>3) continue;
+         cutEff[2]++;
+if((nTightMu+nTightEle)==3){
 	if (nTightMu==2 && nTightEle==1)
 	{
 	  if ( (leadmu->q)*(submu->q) > 0 ) continue;
@@ -619,7 +623,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	  int chargel2 = 0.;
 	  int chargel3 = 0.;
 
-	  if (leadmu->q == subsubmu->q)
+	  if ((leadmu->q * subsubmu->q)>0)
 	  {
 	    float Zmass=91.2;
 	    if((abs((LEP1+LEP2).M() -(Zmass))) > (abs((LEP2+LEP3).M() -(Zmass))))
@@ -630,11 +634,11 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	      chargel1 = submu->q;
 	      chargel2 = subsubmu->q;
 	      chargel3 = leadmu->q;
-	      cout<<chargel1<<"==> subleadmu"<<endl;
+/*	      cout<<chargel1<<"==> subleadmu"<<endl;
 		cout<<chargel2<<"==> subsubleadmu"<<endl;
 		cout<<chargel3<<"==> leadmu"<<endl;
 
-	    }
+*/	    }
 	    else {
 	      LEP1.SetPtEtaPhiE(leadmu->pt,leadmu->eta,leadmu->phi,leadmue);
 	      LEP2.SetPtEtaPhiE(submu->pt,submu->eta,submu->phi,submue);
@@ -648,7 +652,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	    }
 	  }
 
-	  if (leadmu->q == submu->q)
+	  if ((leadmu->q * submu->q)>0)
 	  {
 	    float Zmass=91.2;
 	    if((abs((LEP1+LEP3).M() -(Zmass))) > (abs((LEP2+LEP3).M() -(Zmass))))
@@ -676,7 +680,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	    }
 	  }
 
-	  else if (submu->q == subsubmu->q)
+	  else if((submu->q * subsubmu->q)>0)
 	  {
 	    float Zmass=91.2;
 	    if((abs((LEP3+LEP1).M() -(Zmass))) > (abs((LEP2+LEP1).M() -(Zmass))))
@@ -763,7 +767,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	  int chargel2 = 0.;
 	  int chargel3 = 0.;
 
-	  if (leadele->q == subsubele->q)
+	  if ((leadele->q*subsubele->q)>0)
 	  {
 	    float Zmass=91.2;
 	    if((abs((LEP1+LEP2).M() - (Zmass))) > (abs((LEP2+LEP3).M() - (Zmass))))
@@ -786,7 +790,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	    }
 	  }
 
-	  if (leadele->q == subele->q)
+	  if ((leadele->q*subele->q)>0)
 	  {
 	    float Zmass=91.2;
 	    if((abs((LEP1+LEP3).M() -(Zmass))) > (abs((LEP2+LEP3).M() -(Zmass))))
@@ -808,7 +812,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	    }
 	  }
 
-	  else if (subele->q == subsubele->q)
+	  else if ((subele->q * subsubele->q)>0)
 	  {
 	    float Zmass=91.2;
 	    if((abs((LEP3+LEP1).M()-(Zmass))) > (abs((LEP2+LEP1).M()-(Zmass))))
@@ -862,7 +866,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
       if ((nTightMu+nTightEle)<3) continue;
       if((nLooseEle+nLooseMu)>3) continue;
       //cout<<"nLooseEle+nLooseMu =  "<<nLooseEle+nLooseMu<<endl;
-      cutEff[2]++;
+      cutEff[3]++;
 
 
 
@@ -876,7 +880,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 
 
       if(WZTree->dilep_m <4) continue;
-      cutEff[3]++;
+      cutEff[4]++;
       // cout<<"dilep_m =   "<<WZTree->dilep_m<<endl;
       if(WZTree->l_pt1>0&&WZTree->l_pt2>0&&WZTree->l_pt3>0)
       {
@@ -887,10 +891,10 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
       }
       //    cout<<"trilep_m =   "<<WZTree->trilep_m<<endl;
       if(WZTree->trilep_m <100) continue;
-      cutEff[4]++;
+      cutEff[5]++;
       float Zmass = 91.2;
       if( (abs((WZTree->dilep_m) - Zmass)) > 15)	continue;
-      cutEff[5]++;
+      cutEff[6]++;
       //cout<<"X    "<<(abs((WZTree->trilep_m) - Zmass))<<endl;
 
       //ID & GSF efficiency SF for electrons (https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#Electron_efficiencies_and_scale)
@@ -951,7 +955,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 
       // //preselection on met
       if (info->pfMETC < 30) continue;   //Et(miss)>40GeV
-      cutEff[6]++;
+      cutEff[7]++;
 
       TLorentzVector W_Met;
       WZTree->pfMET_Corr = info->pfMETC;
@@ -975,7 +979,6 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
       { //loop5 on AK4 jets begins
 	const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[i]);
 	TLorentzVector AK4_LV_temp, AK4_LV_temp2;
-
 	// Get uncertanity
 	double unc = func(jet->pt, jet->eta, fJetUnc_AK4chs); 
 
@@ -1000,7 +1003,6 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
       WZTree->nBTagJet_medium=0;
       WZTree->nBTagJet_tight=0;
 
-      int OnlyTwoVBFTypeJets = 0;
 
       std::vector<int> indexGoodVBFJets;
 
@@ -1011,13 +1013,15 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	//loop r begins
 	const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[i]);
 	bool isCleaned = true;
+//cout<<"1"<<jentry2 << "\tpt of jets   "<<jet->pt<<endl;
 
-	if (jet->pt<=50) continue;
-	if (!passJetLooseSel(jet)) continue;
+	if (jet->pt<=30) continue;
+	//cout<<"2"<<jentry2 << "\tpt of jets   "<<jet->pt<<endl;
+if (!passJetLooseSel(jet)) continue;
 
 	//fill B-Tag info
 
-	if (fabs(jet->eta) < 2.4 && jet->pt>50){
+	if (fabs(jet->eta) < 2.4 && jet->pt>30){
 	  if (jet->csv>0.5426)  WZTree->nBTagJet_loose++;
 	  if (jet->csv>0.8484)  WZTree->nBTagJet_medium++;
 	  if (jet->csv>0.9535)  WZTree->nBTagJet_tight++;
@@ -1025,29 +1029,31 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	}
 	for ( std::size_t j=0; j<tightEle.size(); j++) {
 	  if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
-		jet->eta,   jet->phi) < 0.3) {
+		jet->eta,   jet->phi) < 0.4) {
 	    isCleaned = false;
 	  }
 	}
 	for ( std::size_t j=0; j<tightMuon.size(); j++) {
 	  if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
-		jet->eta,   jet->phi) < 0.3) {
+		jet->eta,   jet->phi) < 0.4) {
 	    isCleaned = false;
 	  }
 	}
-
+//cout<<"jet->eta== "<<jet->eta<<endl;
 	if (isCleaned==false) continue;
 	//    if (isCleanedFromFatJet==false) continue;
-	if (fabs(jet->eta)>=5.0) continue;//2.4 check change
-	if (jet->pt<=50) continue;
+	if (fabs(jet->eta)>=4.7) continue;//2.4 check change
+	if (jet->pt<=30) continue;
+//cout<<"3"<<jentry2 << "\tpt of jets   "<<jet->pt<<endl;
 	//if (jet->csv>0.8484) continue;
 	indexGoodVBFJets.push_back(i); //save index of the "good" vbf jets candidates
 
 	//      if (fabs(jet->eta)>=5.0) continue;//2.4 check change
 
 	WZTree->njets++;
+//cout<<"njets =="<<WZTree->njets++<<endl;
 	AK4.SetPtEtaPhiM(jet->pt,jet->eta,jet->phi,jet->mass);
-
+//cout<<"4"<<jentry2 << "\tpt of jets   "<<jet->pt<<endl;
 
 
 	//------------------------------
@@ -1055,132 +1061,103 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	//------------------------------
       }
       if (indexGoodVBFJets.size()<2) continue;
-      cutEff[7]++;
-      if (indexGoodVBFJets.size()>=2) 
-      {//loop y begins
-
-
-	float tempPtMax=0.;
-	float DRvbf;
-	int nVBF1=-1, nVBF2=-1; //position of the two vbf jets
-
-	for (std::size_t i=0; i<indexGoodVBFJets.size()-1; i++) {//loop p
-	  for ( std::size_t ii=i+1; ii<indexGoodVBFJets.size(); ii++) {//loop q 
-	    const baconhep::TJet *jet1 = (baconhep::TJet*)((*jetArr)[indexGoodVBFJets.at(i)]);
-	    const baconhep::TJet *jet2 = (baconhep::TJet*)((*jetArr)[indexGoodVBFJets.at(ii)]);
-	    if (jet1->pt < 50) continue;
-	    if (jet2->pt < 50) continue;
-	    VBF1.SetPtEtaPhiM(jet1->pt,jet1->eta,jet1->phi,jet1->mass);
-	    VBF2.SetPtEtaPhiM(jet2->pt,jet2->eta,jet2->phi,jet2->mass);
-	    TOT = VBF1 + VBF2;
-
-	    //if (TOT.M()<500) continue;
-	    if ( VBFSel==1)
-	    {
-	      if (TOT.Pt() < tempPtMax) continue;
-	      tempPtMax = TOT.Pt(); //take the jet pair with largest Pt
-	    }
-	    else if ( VBFSel==2)
-	    {
-	      if (TOT.M() < tempPtMax) continue;
-	      tempPtMax = TOT.M(); //take the jet pair with largest mass
-	    }
-	    else if ( VBFSel==3)
-	    {
-	      DRvbf = abs(VBF1.Eta()-VBF2.Eta());
-	      if (DRvbf < tempPtMax) continue;
-	      tempPtMax = DRvbf; //take the jet pair with largest dEta_jj
-	    }
-	    else
-	    {
-	      cout<<"\n\nERROR:	Enter valid vbf selection criteria....\n\n"<<endl;
-	      exit(0);
-	    }
-	    nVBF1 = indexGoodVBFJets.at(i); //save position of the 1st vbf jet
-	    nVBF2 = indexGoodVBFJets.at(ii); //save position of the 2nd vbf jet
-	    //cout<<"     "<<nVBF1<<"     "<<nVBF2<<endl;
-	  }//loop q ends
-	}//loop p ends
-	if (nVBF1!=-1 && nVBF2 !=-1) OnlyTwoVBFTypeJets=1;
-	//      cutEff[7]++;
-	//if (OnlyTwoVBFTypeJets!=1) continue;
-	//cutEff[7]++;
-	//cout<<nVBF1<<"               "<<nVBF2<<endl;
-
-	//
-	if (nVBF1!=-1 && nVBF2!=-1) //save infos for vbf jet pair
-	{//loop x begins
-	  const baconhep::TJet *jet1 = (baconhep::TJet*)((*jetArr)[nVBF1]);
-	  const baconhep::TJet *jet2 = (baconhep::TJet*)((*jetArr)[nVBF2]);
-	  VBF1.SetPtEtaPhiM(jet1->pt,jet1->eta,jet1->phi,jet1->mass);
-	  VBF2.SetPtEtaPhiM(jet2->pt,jet2->eta,jet2->phi,jet2->mass);
-	  TOT = VBF1 + VBF2;
-	  //cout<<VBF1<<"               "<<VBF2<<endl;
-	  WZTree->vbf_maxpt_j1_pt = jet1->pt;
-	  WZTree->vbf_maxpt_j1_eta = jet1->eta;
-	  WZTree->vbf_maxpt_j1_phi = jet1->phi;
-	  WZTree->vbf_maxpt_j1_e = VBF1.E();
-	  WZTree->vbf_maxpt_j1_mass = VBF1.M();
-	  WZTree->vbf_maxpt_j1_bDiscriminatorCSV = jet1->csv;
-	  WZTree->vbf_maxpt_j1_charge = jet1->q;
-
-	  WZTree->vbf_maxpt_j2_pt = jet2->pt;
-	  WZTree->vbf_maxpt_j2_eta = jet2->eta;
-	  WZTree->vbf_maxpt_j2_phi = jet2->phi;
-	  WZTree->vbf_maxpt_j2_e = VBF2.E();
-	  WZTree->vbf_maxpt_j2_mass = VBF2.M();
-	  WZTree->vbf_maxpt_j2_bDiscriminatorCSV = jet2->csv;
-	  WZTree->vbf_maxpt_j2_charge = jet2->q;
-	  WZTree->vbf_maxpt_jj_pt = TOT.Pt();
-	  //cout<<"X  "<< WZTree->vbf_maxpt_jj_pt<<endl;
-
-	  WZTree->vbf_maxpt_jj_eta = TOT.Eta();
-	  WZTree->vbf_maxpt_jj_phi = TOT.Phi();
-
-	  WZTree->vbf_maxpt_jj_m = TOT.M();	
-	  //cout<<"maxpt of VBF    "<<WZTree->vbf_maxpt_jj_m<<endl;
-
-	  WZTree->vbf_maxpt_jj_Deta = abs(VBF1.Eta() - VBF2.Eta());
-	  //cout<<"Z  "<< WZTree->vbf_maxpt_jj_Deta<<endl;
-
-	}//loop x ends
-      }//loop y ends
-      indexGoodVBFJets.clear();
-      //cout<<jentry<<"    mass of 2 jets=="<<WWTree->vbf_maxpt_jj_m<<endl;
-      ///////////////////////////////////////////////////////////////////////////////////////
-      if (OnlyTwoVBFTypeJets == 1) WZTree->isVBF=1;
-      if (OnlyTwoVBFTypeJets == 0 ) continue;
       cutEff[8]++;
-      //    cout<<"X  "<<OnlyTwoVBFTypeJets<<endl;
-      //  if (WZTree->vbf_maxpt_jj_m<500)  continue;
-      //if (WWTree->vbf_maxpt_jj_Deta  <2.5) continue;
-      // if (WWTree->l_pt2<0) 
-      //cutEff[9]++;
-      //      cout<<"DEBUG: 1: maxpt of VBF    "<<WZTree->vbf_maxpt_jj_m<<endl;
+	int nVBF1=-1, nVBF2=-1; //position of the two vbf jets
+	//cout<<jentry2 << "\tpt of jets   "<<jet->pt<<endl;
+	double jetselectid[2]={-999, -999};
+	double jetselectpt[2]={0, 0};
+	//cout<<"id of first    "<<jetselectid[0]<<"id of second    "<<jetselectid[1]<<endl;
+	//cout<<"pt of first    "<<jetselectpt[0]<<"pt of second    "<<jetselectpt[1]<<endl;
+	//cout<<"indexGoodVBFJets.size()="<<indexGoodVBFJets.size()<<endl;
+	for (std::size_t i=0; i<indexGoodVBFJets.size(); i++){
+		const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[indexGoodVBFJets.at(i)]);
+		//cout<<jentry2 << "\tpt of jets   "<<jet->pt<<endl;
+		if(jet->pt<30) continue;
+		if(jet->pt>jetselectpt[1]){
+			//cout<<"[0]="<<jetselectpt[0]<<"and [1]="<<jetselectpt[1]<<endl;
+			//cout<<"repacing [0]="<<jetselectpt[0]<<" by [1]="<<jetselectpt[1]<<endl;
+			jetselectpt[0]=jetselectpt[1];
+			jetselectid[0]=jetselectid[1];
+			//cout<<"repacing [1]="<<jetselectpt[1]<<" by new pt="<<jet->pt<<endl;
+			jetselectpt[1]=jet->pt;
+			jetselectid[1]=i;
+			//cout<<"first[0]="<<jetselectpt[0]<<"and [1]="<<jetselectpt[1]<<endl;
+		}
+		else if(jet->pt>jetselectpt[0])
+		{
+			jetselectpt[0]=jet->pt;
+			jetselectid[0]=i;
+		}
+		//cout<<"[0]="<<jetselectpt[0]<<"and [1]="<<jetselectpt[1]<<endl;
+	}
+	if (jetselectid[0]<0)continue;
+	if (jetselectid[1]<0)continue;
+	
+	nVBF1 = indexGoodVBFJets.at(jetselectid[1]); //save position of the 1st vbf jet
+	nVBF2 = indexGoodVBFJets.at(jetselectid[0]); //save position of the 2nd vbf jet
+
+	const baconhep::TJet *jet1 = (baconhep::TJet*)((*jetArr)[nVBF1]);
+	const baconhep::TJet *jet2 = (baconhep::TJet*)((*jetArr)[nVBF2]);
+	//cout<<jentry2<<"jet1    "<<jet1->pt<<endl;
+	//cout<<jentry2<<"jet2    "<<jet2->pt<<endl;	 //   if (jet1->pt < 30) continue;
+	VBF1.SetPtEtaPhiM(jet1->pt,jet1->eta,jet1->phi,jet1->mass);
+	VBF2.SetPtEtaPhiM(jet2->pt,jet2->eta,jet2->phi,jet2->mass);
+	TOT = VBF1 + VBF2;
+	//	  cout<<VBF1<<"               "<<VBF2<<endl;
+
+	WZTree->vbf_maxpt_j1_pt = jet1->pt;
+	//  cout<<jentry2<<"jet1    "<<jet1->pt<<endl;
+	WZTree->vbf_maxpt_j1_eta = jet1->eta;
+	WZTree->vbf_maxpt_j1_phi = jet1->phi;
+	WZTree->vbf_maxpt_j1_e = VBF1.E();
+	WZTree->vbf_maxpt_j1_mass = VBF1.M();
+	WZTree->vbf_maxpt_j1_bDiscriminatorCSV = jet1->csv;
+	WZTree->vbf_maxpt_j1_charge = jet1->q;
+
+	WZTree->vbf_maxpt_j2_pt = jet2->pt;
+	// cout<<jentry2<<"jet2    "<<jet2->pt<<endl;
+	WZTree->vbf_maxpt_j2_eta = jet2->eta;
+	WZTree->vbf_maxpt_j2_phi = jet2->phi;
+	WZTree->vbf_maxpt_j2_e = VBF2.E();
+	WZTree->vbf_maxpt_j2_mass = VBF2.M();
+	WZTree->vbf_maxpt_j2_bDiscriminatorCSV = jet2->csv;
+	WZTree->vbf_maxpt_j2_charge = jet2->q;
+	WZTree->vbf_maxpt_jj_pt = TOT.Pt();
+	//cout<<"X  "<< WZTree->vbf_maxpt_jj_pt<<endl;
+
+	WZTree->vbf_maxpt_jj_eta = TOT.Eta();
+	WZTree->vbf_maxpt_jj_phi = TOT.Phi();
+
+	WZTree->vbf_maxpt_jj_m = TOT.M();	
+	//cout<<"maxpt of VBF    "<<WZTree->vbf_maxpt_jj_m<<endl;
+	//cout<<"maxmass of VBF    "<<WZTree->vbf_maxpt_jj_m<<endl;
+	if (TOT.M()<500) continue;
+	cutEff[9]++;
+	WZTree->vbf_maxpt_jj_Deta = abs(VBF1.Eta() - VBF2.Eta());
+	if (abs(VBF1.Eta() - VBF2.Eta()) <2.5) continue;
+	cutEff[10]++;
+	//cout<<"Z  "<< WZTree->vbf_maxpt_jj_Deta<<endl;
+
+	indexGoodVBFJets.clear();
+	///////////////////////////////////////////////////////////////////////////////////////
+	cutEff[11]++;
+
+	WZTree->totalEventWeight = WZTree->pu_Weight*WZTree->trig_eff_Weight*WZTree->id_eff_Weight*WZTree->trig_eff_Weight2*WZTree->id_eff_Weight2*WZTree->trig_eff_Weight3*WZTree->id_eff_Weight3;
+
+	WZTree->nEvents = TotalNumberOfEvents;
+	WZTree->nNegEvents = nNegEvents;
+	WZTree->nTotEvents = std::atof(TotalNumberOfEntries.c_str());
+	WZTree->nTotNegEvents = std::atof(TotalNumberOfNegativeEntries.c_str());
+
+	WZTree->ZeppenfeldW1 =(((LEP1+LEP2+LEP3).Eta()) - ((VBF1.Eta() + VBF2.Eta())/2.0));
+	if ((abs(WZTree->ZeppenfeldW1)) >2.5) continue;
+
+	cutEff[12]++;
 
 
-      WZTree->totalEventWeight = WZTree->pu_Weight*WZTree->trig_eff_Weight*WZTree->id_eff_Weight*WZTree->trig_eff_Weight2*WZTree->id_eff_Weight2*WZTree->trig_eff_Weight3*WZTree->id_eff_Weight3;
-
-
-      WZTree->nEvents = TotalNumberOfEvents;
-      WZTree->nNegEvents = nNegEvents;
-      WZTree->nTotEvents = std::atof(TotalNumberOfEntries.c_str());
-      WZTree->nTotNegEvents = std::atof(TotalNumberOfNegativeEntries.c_str());
-
-      //if(VBF1.
-      //if (fabs(VBF1.Eta() - VBF2.Eta())  < 2.5) continue;
-      //  cutEff[10]++;
-      //     cout<<"Y   "<<fabs(VBF1.Eta() - VBF2.Eta())<<endl;
-
-      WZTree->ZeppenfeldW1 =((LEP1.Eta()+LEP2.Eta()+LEP3.Eta()) - ((VBF1.Eta() + VBF2.Eta())/2.0));
-      if ((abs(WZTree->ZeppenfeldW1)) >2.5) continue;
-
-      cutEff[9]++;
-
-
-      outTree->Fill();
-      //cout<<"DEBUG: 2:" << endl;
-      //cout<<"DEBUG: 3:" << endl;
+	outTree->Fill();
+	//cout<<"DEBUG: 2:" << endl;
+	//cout<<"DEBUG: 3:" << endl;
     }//loop on entries end
     delete infile;
     infile=0, eventTree=0;
@@ -1207,17 +1184,18 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
   std::cout<<"negative events: "<<nNegEvents<<std::endl;
   std::cout << std::endl;
   std::cout<<"(0) all events:        "<<cutEff[0]<<"\t:\t"<<((float)cutEff[0]*100.0)/(float)cutEff[0]<<std::endl
-    <<"(1) Gen Events:        "<<cutEff[1]<<"\t:\t"<<((float)cutEff[1]*100.0)/(float)cutEff[0]<<std::endl
-    <<"(2) tight lepton:      "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
-    <<"(3) DileptonMass:               "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
-    <<"(4) trileptonMass:               "<<cutEff[4]<<"\t:\t"<<((float)cutEff[4]*100.0)/(float)cutEff[3]<<std::endl
-    <<"(5) Dilepton-ZMass:  "<<cutEff[5]<<"\t:\t"<<((float)cutEff[5]*100.0)/(float)cutEff[4]<<std::endl
-    <<"(6) MET:               "<<cutEff[6]<<"\t:\t"<<((float)cutEff[6]*100.0)/(float)cutEff[5]<<std::endl
-    <<"(7) >=2 good VBF jets: "<<cutEff[7]<<"\t:\t"<<((float)cutEff[7]*100.0)/(float)cutEff[6]<<std::endl
-    <<"(8) =2 VBF jets      : "<<cutEff[8]<<"\t:\t"<<((float)cutEff[8]*100.0)/(float)cutEff[7]<<std::endl
-    //<<"(9) Highest pt VBF jets with mjj>500:  "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.)/(float)cutEff[8]<<std::endl
-    //<<"(10) Events with VBFjets delta eta>2.5"<<cutEff[10]<<"\t:\t"<<((float)cutEff[10]*100.)/(float)cutEff[9]<<std::endl
-    <<"(9) ZeppenCut:                       "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.)/(float)cutEff[8]<<std::endl;
+	  <<"(1) Gen Events:        "<<cutEff[1]<<"\t:\t"<<((float)cutEff[1]*100.0)/(float)cutEff[0]<<std::endl
+	  <<"(2) Exactly 3 lepton:  "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
+	  <<"(3) tight lepton:      "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
+	  <<"(4) DileptonMass:               "<<cutEff[4]<<"\t:\t"<<((float)cutEff[4]*100.0)/(float)cutEff[3]<<std::endl
+	  <<"(5) trileptonMass:               "<<cutEff[5]<<"\t:\t"<<((float)cutEff[5]*100.0)/(float)cutEff[4]<<std::endl
+	  <<"(6) Dilepton-ZMass:  "<<cutEff[6]<<"\t:\t"<<((float)cutEff[6]*100.0)/(float)cutEff[5]<<std::endl
+	  <<"(7) MET:               "<<cutEff[7]<<"\t:\t"<<((float)cutEff[7]*100.0)/(float)cutEff[6]<<std::endl
+	  <<"(8) >=2 good VBF jets: "<<cutEff[8]<<"\t:\t"<<((float)cutEff[8]*100.0)/(float)cutEff[7]<<std::endl
+	  <<"(9) Highest pt VBF jets with mjj>500      : "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.0)/(float)cutEff[8]<<std::endl
+	  <<"(10) Events with VBFjets delta eta>2.5:  "<<cutEff[10]<<"\t:\t"<<((float)cutEff[10]*100.)/(float)cutEff[9]<<std::endl
+	  <<"(11) =2 VBF jets    : "<<cutEff[11]<<"\t:\t"<<((float)cutEff[11]*100.)/(float)cutEff[10]<<std::endl
+	  <<"(12) ZeppenCut:                       "<<cutEff[12]<<"\t:\t"<<((float)cutEff[12]*100.)/(float)cutEff[11]<<std::endl;
   //std::cout << "Yield =  " << cutEff[9]*0.00128*WZTree->totalEventWeight<<endl;
   //--------close everything-------------
   delete info; delete gen;
