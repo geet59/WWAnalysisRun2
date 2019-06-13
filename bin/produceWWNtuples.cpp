@@ -449,6 +449,8 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
       WZTree->id_eff_Weight2 = 1.;
       WZTree->trig_eff_Weight = 1.;
       WZTree->trig_eff_Weight2 = 1.;
+WZTree->id_eff_Weight3 = 1.;
+      WZTree->trig_eff_Weight3 = 1.;
 
       if (gen->weight>0)
 	WZTree->genWeight=1.;
@@ -485,7 +487,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
       }//loop17 ends
 
       if(applyTrigger==1)
-	if(!(triggerMenu.pass("HLT_IsoMu24_v*",info->triggerBits) || triggerMenu.pass("HLT_IsoTkMu24_v*",info->triggerBits) ||  triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits))) continue;
+	if(! triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits)) continue;
 
       /////////////////THE SELECTED LEPTON
       int nTightEle=0, nLooseEle=0;
@@ -606,7 +608,26 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
       if (info->pfMETC < 30) continue;   //Et(miss)>40GeV
       cutEff[8]++;
 
-
+ if (strcmp(leptonName.c_str(),"el")==0 && isMC==1) {//loop 3 begins
+	//  apply ID, ISO SF's
+	WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, WZTree->l_eta1, hIDIsoEle);	// Get Scale factor corresponding to the pt and eta.
+	
+	WZTree->id_eff_Weight = WZTree->id_eff_Weight*GetSFs_Lepton(WZTree->l_pt1, WZTree->l_eta1, hGSFCorrEle);
+	WZTree->trig_eff_Weight = 1.0/GetSFs_Lepton(WZTree->l_pt1, WZTree->l_eta1, hTriggerEle);
+	
+	WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, WZTree->l_eta2, hIDIsoEle);	// Get Scale factor corresponding to the pt and eta.
+	
+  						// apply GSF/RECO SF's for electrons 
+	WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, WZTree->l_eta2, hGSFCorrEle);
+	WZTree->trig_eff_Weight2 = 1.0/GetSFs_Lepton(WZTree->l_pt2, WZTree->l_eta2, hTriggerEle);
+	
+	WZTree->id_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, WZTree->l_eta3, hIDIsoEle);       // Get Scale factor corresponding to the pt and eta.
+	
+	// apply GSF/RECO SF's for electrons
+	WZTree->id_eff_Weight3 = WZTree->id_eff_Weight3*GetSFs_Lepton(WZTree->l_pt3, WZTree->l_eta3, hGSFCorrEle);
+	WZTree->trig_eff_Weight3 = 1.0/GetSFs_Lepton(WZTree->l_pt3, WZTree->l_eta3, hTriggerEle);
+	}
+cutEff[9]++;  												//loop 3 ends
       outTree->Fill();
       //cout<<"DEBUG: 2:" << endl;
       //cout<<"DEBUG: 3:" << endl;
@@ -639,7 +660,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	  <<"(1) Gen Events:        "<<cutEff[1]<<"\t:\t"<<((float)cutEff[1]*100.0)/(float)cutEff[0]<<std::endl
 	  <<"(2) Exactly 3 electron:  "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
 	  <<"(3) effective electron:      "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
-	  <<"(4) MET:               "<<cutEff[8]<<"\t:\t"<<((float)cutEff[8]*100.0)/(float)cutEff[7]<<std::endl;
+	  <<"(4) MET:               "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.0)/(float)cutEff[8]<<std::endl;
 	  //<<"(12) ZeppenCut:                       "<<cutEff[12]<<"\t:\t"<<((float)cutEff[12]*100.)/(float)cutEff[11]<<std::endl;
   //std::cout << "Yield =  " << cutEff[9]*0.00128*WZTree->totalEventWeight<<endl;
   //--------close everything-------------
