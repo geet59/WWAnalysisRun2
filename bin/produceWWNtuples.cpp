@@ -307,7 +307,8 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
     for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
     {
       infoBr->GetEntry(jentry);	    
-      //if	(jentry2>100) exit(0);
+//if	(jentry2>100) exit(0);
+
 
       int GenPassCut = 0;
 
@@ -359,8 +360,14 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	    genNeutrino.SetPtEtaPhiM(genloop->pt, genloop->eta, genloop->phi, genloop->mass);
 	    v_genNeutrino.push_back(genNeutrino);
 	  }
+
+	  if( (abs(genloop->pdgId) == 1 || abs(genloop->pdgId) == 3 || abs(genloop->pdgId) == 5 || abs(genloop->pdgId) == 2 || abs(genloop->pdgId) == 4 || abs(genloop->pdgId) == 6) && genloop->status == 23 && abs(parentPdg) != 24)
+	  {
+	    genVBFquarks.SetPtEtaPhiM(genloop->pt, genloop->eta, genloop->phi, genloop->mass);
+	    v_genVBFquarks.push_back(genVBFquarks);
+	  }
 	} //loop12 ends 
-	if (vZ_genLep.size()==2 && vW_genLep.size()==1 && v_genNeutrino.size()==1 )
+	if (vZ_genLep.size()==2 && vW_genLep.size()==1 && v_genNeutrino.size()==1 && v_genVBFquarks.size()==2)
 	{ //loop13 begins
 	  WZTree->isGen           = 1;
 	  WZTree->lep1_pt_gen      = (vZ_genLep[0]).Pt();
@@ -376,9 +383,11 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	  WZTree->nu3_pt_gen	  = (v_genNeutrino[2]).Pt();
 	  WZTree->nu3_eta_gen	  = (v_genNeutrino[2]).Eta();
 
+
 	  WZTree->dilep_m_gen    = (vZ_genLep[0]+vZ_genLep[1]).M();
 
 	  WZTree->trilep_m_gen    = (vZ_genLep[0]+vZ_genLep[1]+vW_genLep[2]).M();    
+
 
 	  WZTree->lepZ_pt_gen     = (vZ_genLep[0]+vZ_genLep[1]).Pt();
 	  WZTree->lepZ_eta_gen    = (vZ_genLep[0]+vZ_genLep[1]).Eta();
@@ -395,6 +404,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	  WZTree->WZ_mT_gen	= (vZ_genLep[0] + vZ_genLep[1] + vW_genLep[2] + v_genNeutrino[2]).Mt();
 	  WZTree->WZ_pT_gen	= (vZ_genLep[0] + vZ_genLep[1] + vW_genLep[2] + v_genNeutrino[2]).Pt();
 	  WZTree->WZ_eta_gen    = (vZ_genLep[0] + vZ_genLep[1] + vW_genLep[2] + v_genNeutrino[2]).Eta();
+
 
 	  WZTree->AK4_1_pt_gen	= v_genVBFquarks[0].Pt();
 	  WZTree->AK4_1_eta_gen	= v_genVBFquarks[0].Eta();
@@ -413,9 +423,13 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 
 	  WZTree->Zeppen1=abs(WZTree->WZ_eta_gen -(WZTree->AK4_1_eta_gen + WZTree->AK4_2_eta_gen)/2) ;
 
+
+
+
 	  count_genEvents++;
 	}
-	if ( WZTree->lep1_pt_gen > 25 && WZTree->lep2_pt_gen >15 && WZTree->lep3_pt_gen >20 && ((abs(WZTree->lep1_eta_gen)) <2.5) && ((abs(WZTree->lep2_eta_gen)) <2.5) && ((abs(WZTree->lep3_eta_gen)) <2.5) && WZTree->dilep_m_gen >4 && WZTree->trilep_m_gen >100  && ((abs((WZTree->dilep_m_gen) -91.2))<15) ) 
+	if ( WZTree->lep1_pt_gen > 25 && WZTree->lep2_pt_gen >15 && WZTree->lep3_pt_gen >20 && ((abs(WZTree->lep1_eta_gen)) <2.5) && ((abs(WZTree->lep2_eta_gen)) <2.5) && ((abs(WZTree->lep3_eta_gen)) <2.5) && WZTree->dilep_m_gen >4 && WZTree->trilep_m_gen >100  && ((abs(WZTree->AK4_jj_DeltaEta_gen))>2.5) && WZTree->AK4_1_pt_gen >50 && WZTree->AK4_2_pt_gen>50 && ((abs(WZTree->AK4_1_eta_gen)) <4.7) && ((abs(WZTree->AK4_2_eta_gen)) <4.7) && WZTree->AK4_jj_mass_gen > 500   && ((abs((WZTree->dilep_m_gen) -91.2))<15) && WZTree->Zeppen1<2.5 ) 
+
 	{
 	  GenPassCut = 1;
 	}
@@ -442,6 +456,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	WZTree->genWeight=1.;
       else if (gen->weight<0) {  //loop15 begins
 	WZTree->genWeight=-1.;
+	//nNegEvents++;
       }  //loop15 ends
       cutEff[0]++;
 
@@ -450,6 +465,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	if (GenPassCut == 1)   
 	  cutEff[1]++;
       } //loop16ends
+
 
       vertexArr->Clear();
       vertexBr->GetEntry(jentry);
@@ -471,14 +487,12 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
       }//loop17 ends
 
       if(applyTrigger==1)
-	if(!( triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits))) continue;
+	if(!(triggerMenu.pass("HLT_IsoMu24_v*",info->triggerBits) || triggerMenu.pass("HLT_IsoTkMu24_v*",info->triggerBits) ||  triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits))) continue;
 
       /////////////////THE SELECTED LEPTON
       int nTightEle=0, nLooseEle=0;
-      int nTightMu=0, nLooseMu=0;
       double pt_cut = 15;//pvrevious=25
       double leadelept_cut = 15;
-      double leadmupt_cut = 15;
       electronArr->Clear();
       electronBr->GetEntry(jentry);
       const baconhep::TElectron *leadele = NULL;
@@ -520,11 +534,13 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	  //subsubeleE = ELE.E();
 	  WZTree->l_iso3 = iso/ele->pt;
 	}
+
       } //loop1 on electron ends
 
-      if (nTightEle>3)continue;
-      if (nTightEle== 3)
-      {
+
+if (nTightEle>3)continue;
+	 if (nTightEle== 3)
+	{
 	  LEP1.SetPtEtaPhiE(leadele->pt,leadele->eta,leadele->phi,leadeleE);
 	  LEP2.SetPtEtaPhiE(subele->pt,subele->eta,subele->phi,subeleE);
 	  LEP3.SetPtEtaPhiE(subsubele->pt,subsubele->eta,subsubele->phi,subsubeleE);
@@ -554,7 +570,8 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	      chargel3 = subsubele->q;
 	    }
 	  }
-	  else if ((leadele->q*subele->q)>0)
+
+	  if ((leadele->q*subele->q)>0)
 	  {
 	    float Zmass=91.2;
 	    if((abs((LEP1+LEP3).M() -(Zmass))) > (abs((LEP2+LEP3).M() -(Zmass))))
@@ -575,6 +592,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	      chargel3 = subele->q;
 	    }
 	  }
+
 	  else if ((subele->q * subsubele->q)>0)
 	  {
 	    float Zmass=91.2;
@@ -617,14 +635,30 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	  WZTree->l_charge3 = chargel3;
 
 	}
-  cutEff[2]++;
+	//cout<<WZTree->l_pt1;
+
+
+
+      
+
+cutEff[2]++;
+      if ((WZTree->l_charge1>0 && WZTree->l_charge2 >0 && WZTree->l_charge3 >0) || (WZTree->l_charge1 <0 && WZTree->l_charge2 <0 && WZTree->l_charge3 <0 )) continue;
+      if(!(WZTree->l_pt1>0)&&(WZTree->l_pt2>0)&&(WZTree->l_pt3>0)) continue;
+      cutEff[3]++;
+      // //preselection on met
+      if (info->pfMETC < 30) continue;   //Et(miss)>40GeV
+      cutEff[4]++;
+
 
 	outTree->Fill();
+	//cout<<"DEBUG: 2:" << endl;
+	//cout<<"DEBUG: 3:" << endl;
     }//loop on entries end
     delete infile;
     infile=0, eventTree=0;
     /////////////////FILL THE TREE
   }//loop on file ends
+  //delete puWeight;	delete puWeight_up;	delete puWeight_down;
   delete MCpu;	delete MCpu_up;	delete MCpu_down;
   delete puWeightsDown;	delete puWeightsUp;	delete puWeights;
 
@@ -646,8 +680,10 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
   std::cout << std::endl;
   std::cout<<"(0) all events:        "<<cutEff[0]<<"\t:\t"<<((float)cutEff[0]*100.0)/(float)cutEff[0]<<std::endl
 	  <<"(1) Gen Events:        "<<cutEff[1]<<"\t:\t"<<((float)cutEff[1]*100.0)/(float)cutEff[0]<<std::endl
-	  <<"(2) Exactly 3 electron:  "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl;
-	  //<<"(3) tight lepton:      "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl;
+	  <<"(2) Exactly 3 electron:  "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
+	  <<"(3) effective electron:      "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
+	  <<"(4) MET:               "<<cutEff[4]<<"\t:\t"<<((float)cutEff[4]*100.0)/(float)cutEff[3]<<std::endl;
+	  //<<"(12) ZeppenCut:                       "<<cutEff[12]<<"\t:\t"<<((float)cutEff[12]*100.)/(float)cutEff[11]<<std::endl;
   //std::cout << "Yield =  " << cutEff[9]*0.00128*WZTree->totalEventWeight<<endl;
   //--------close everything-------------
   delete info; delete gen;
