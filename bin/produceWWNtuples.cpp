@@ -123,7 +123,6 @@ int main (int argc, char** argv)
   baconhep::TEventInfo *info  	= new baconhep::TEventInfo();
   baconhep::TGenEventInfo *gen	= new baconhep::TGenEventInfo();
   TClonesArray *genPartArr 	= new TClonesArray("baconhep::TGenParticle");
-  TClonesArray *muonArr    	= new TClonesArray("baconhep::TMuon");
   TClonesArray *electronArr	= new TClonesArray("baconhep::TElectron");
   TClonesArray *vertexArr	= new TClonesArray("baconhep::TVertex");
   TClonesArray *jetArr		= new TClonesArray("baconhep::TJet");
@@ -291,7 +290,6 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 
 
     eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
-    eventTree->SetBranchAddress("Muon", &muonArr); TBranch *muonBr = eventTree->GetBranch("Muon");
     eventTree->SetBranchAddress("Electron", &electronArr); TBranch *electronBr = eventTree->GetBranch("Electron");
     eventTree->SetBranchAddress("PV",   &vertexArr); TBranch *vertexBr = eventTree->GetBranch("PV");
     eventTree->SetBranchAddress("AK4CHS",   &jetArr); TBranch *jetBr = eventTree->GetBranch("AK4CHS");    
@@ -499,7 +497,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
       const baconhep::TElectron *subele = NULL;
       const baconhep::TElectron *subsubele = NULL;
 
-      double leadeleE=-999, subeleE=-999, subsubeleE=-999;
+      //double leadeleE=-999, subeleE=-999, subsubeleE=-999;
       double iso = 1.5;
       for (int i=0; i<electronArr->GetEntries(); i++) {    //loop1 on electron begins
 	const baconhep::TElectron *ele = (baconhep::TElectron*)((*electronArr)[i]);
@@ -518,7 +516,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 	  if(!(ele->pt>leadelept_cut)) continue;
 	  subele = leadele;
 	  leadele = ele;
-	  leadeleE = ELE.E();
+	  //leadeleE = ELE.E();
 	  WZTree->l_iso1 = iso/ele->pt;
 	}
 	else if (!subele || ele->pt > subele->pt)
@@ -537,122 +535,81 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 
       } //loop1 on electron ends
 
-
-if (nTightEle>3)continue;
-	 if (nTightEle== 3)
-	{
-	  LEP1.SetPtEtaPhiE(leadele->pt,leadele->eta,leadele->phi,leadeleE);
-	  LEP2.SetPtEtaPhiE(subele->pt,subele->eta,subele->phi,subeleE);
-	  LEP3.SetPtEtaPhiE(subsubele->pt,subsubele->eta,subsubele->phi,subsubeleE);
-	  int chargel1 = 0.;
-	  int chargel2 = 0.;
-	  int chargel3 = 0.;
-
-	  if ((leadele->q*subsubele->q)>0)
-	  {
-	    float Zmass=91.2;
-	    if((abs((LEP1+LEP2).M() - (Zmass))) > (abs((LEP2+LEP3).M() - (Zmass))))
-	    {
-	      LEP1.SetPtEtaPhiE(subele->pt,subele->eta,subele->phi,subeleE);
-	      LEP2.SetPtEtaPhiE(subsubele->pt,subsubele->eta,subsubele->phi,subsubeleE);
-	      LEP3.SetPtEtaPhiE(leadele->pt,leadele->eta,leadele->phi,leadeleE);
-	      chargel1 = subele->q;
-	      chargel2 = subsubele->q;
-	      chargel3 = leadele->q;
-
-	    }
-	    else {
-	      LEP1.SetPtEtaPhiE(leadele->pt,leadele->eta,leadele->phi,leadeleE);
-	      LEP2.SetPtEtaPhiE(subele->pt,subele->eta,subele->phi,subeleE);
-	      LEP3.SetPtEtaPhiE(subsubele->pt,subsubele->eta,subsubele->phi,subsubeleE);
-	      chargel1 = leadele->q;
-	      chargel2 = subele->q;
-	      chargel3 = subsubele->q;
-	    }
-	  }
-
-	  if ((leadele->q*subele->q)>0)
-	  {
-	    float Zmass=91.2;
-	    if((abs((LEP1+LEP3).M() -(Zmass))) > (abs((LEP2+LEP3).M() -(Zmass))))
-	    {
-	      LEP1.SetPtEtaPhiE(subele->pt,subele->eta,subele->phi,subeleE);
-	      LEP2.SetPtEtaPhiE(subsubele->pt,subsubele->eta,subsubele->phi,subsubeleE);
-	      LEP3.SetPtEtaPhiE(leadele->pt,leadele->eta,leadele->phi,leadeleE);
-	      chargel1 = subele->q;
-	      chargel2 = subsubele->q;
-	      chargel3 = leadele->q;
-	    }
-	    else {
-	      LEP1.SetPtEtaPhiE(leadele->pt,leadele->eta,leadele->phi,leadeleE);
-	      LEP2.SetPtEtaPhiE(subsubele->pt,subsubele->eta,subsubele->phi,subsubeleE);
-	      LEP3.SetPtEtaPhiE(subele->pt,subele->eta,subele->phi,subeleE);
-	      chargel1 = leadele->q;
-	      chargel2 = subsubele->q;
-	      chargel3 = subele->q;
-	    }
-	  }
-
-	  else if ((subele->q * subsubele->q)>0)
-	  {
-	    float Zmass=91.2;
-	    if((abs((LEP3+LEP1).M()-(Zmass))) > (abs((LEP2+LEP1).M()-(Zmass))))
-	    {
-	      LEP1.SetPtEtaPhiE(leadele->pt,leadele->eta,leadele->phi,leadeleE);
-	      LEP2.SetPtEtaPhiE(subele->pt,subele->eta,subele->phi,subeleE);
-	      LEP3.SetPtEtaPhiE(subsubele->pt,subsubele->eta,subsubele->phi,subsubeleE);
-	      chargel1 = leadele->q;
-	      chargel2 = subele->q;
-	      chargel3 = subsubele->q;
-	    }
-	    else {
-	      LEP1.SetPtEtaPhiE(leadele->pt,leadele->eta,leadele->phi,leadeleE);
-	      LEP2.SetPtEtaPhiE(subsubele->pt,subsubele->eta,subsubele->phi,subsubeleE);
-	      LEP3.SetPtEtaPhiE(subele->pt,subele->eta,subele->phi,subeleE);
-	      chargel1 = leadele->q;
-	      chargel2 = subsubele->q;
-	      chargel3 = subele->q;
-	      /*cout<<chargel1<<"==> leadele"<<endl;
-		cout<<chargel2<<"==> subsubleadele"<<endl;
-		cout<<chargel3<<"==> subleadele"<<endl;*/	   
-	    }
-	  }
-	  WZTree->l_pt1 = LEP1.Pt();
-	  WZTree->l_eta1 = LEP1.Eta();
-	  WZTree->l_phi1 = LEP1.Phi();
-	  WZTree->l_e1 = LEP1.M();
-	  WZTree->l_charge1 = chargel1;
-
-	  WZTree->l_pt2  = LEP2.Pt();
-	  WZTree->l_eta2 = LEP2.Eta();
-	  WZTree->l_phi2 = LEP2.Phi();
-	  WZTree->l_e2 = LEP2.M();
-	  WZTree->l_charge2 = chargel2;
-	  WZTree->l_pt3  = LEP3.Pt();
-	  WZTree->l_eta3 = LEP3.Eta();
-	  WZTree->l_phi3 = LEP3.Phi();
-	  WZTree->l_e3 = LEP3.M();
-	  WZTree->l_charge3 = chargel3;
-
-	}
-	//cout<<WZTree->l_pt1;
-
-
-
-      
-
-cutEff[2]++;
-      if ((WZTree->l_charge1>0 && WZTree->l_charge2 >0 && WZTree->l_charge3 >0) || (WZTree->l_charge1 <0 && WZTree->l_charge2 <0 && WZTree->l_charge3 <0 )) continue;
-      if(!(WZTree->l_pt1>0)&&(WZTree->l_pt2>0)&&(WZTree->l_pt3>0)) continue;
+      if (nTightEle != 3) continue;
+      if (nLooseEle>3) continue;
+      cutEff[2]++;
+      //cout << jentry2 << "\tTLV: tightEle = " << tightEle.size() << "\t" << tightEle[0].Pt() << "\t" << tightEle[1].Pt() << "\t" << tightEle[2].Pt() << endl;
+      if ((leadele->q>0 && subele->q>0 && subsubele>0) || (leadele->q<0 && subele->q<0 && subsubele<0))
+          continue;
       cutEff[3]++;
+      float charge1 = 0.0;
+      float charge2 = 0.0;
+      int tightEle_ZL1_index = -1;
+      int tightEle_ZL2_index = -1;
+      float deltaM = 900.0;
+      for(int i=0; i<nTightEle-1; i++) {
+          for(int j=i+1; j<nTightEle; j++) {
+	      if (i==0) charge1 = leadele->q;
+	      if (j==0) charge2 = leadele->q;
+	      if (i==1) charge1 = subele->q;
+	      if (j==1) charge2 = subele->q;
+	      if (i==2) charge1 = subsubele->q;
+	      if (j==2) charge2 = subsubele->q;
+	      if (charge1*charge2 > 0) continue;
+	      if (fabs((tightEle[i]+tightEle[j]).M()-91.1876) < deltaM) {
+	          deltaM = fabs((tightEle[i]+tightEle[j]).M()-91.1876); 
+		  tightEle_ZL1_index = i;
+		  tightEle_ZL2_index = j;
+              }
+          }
+      }
+      cutEff[4]++;
+      //Get index for w-boson
+      int tightEle_WL_index = -1;
+      for(int i=0; i<nTightEle; i++) {
+          if (i==tightEle_ZL1_index || i==tightEle_ZL2_index) continue;
+	  tightEle_WL_index = i;
+      }
+      //cout << jentry2 << "\t" << tightEle_ZL1_index << "\t" << tightEle_ZL2_index << "\t" << (tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() << endl;
+
+      // continue if m_ll is less then 4 GeV
+      if ((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() < 4.0) continue;
+      cutEff[5]++;
+      // contiue if Z-mass is outside mass window of 15 GeV
+      if (fabs((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() - 91.1876) > 15.) continue;
+      cutEff[6]++;
+      // continue if m_lll is less then 100 GeV
+      if ((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]+tightEle[tightEle_WL_index]).M() < 100.) continue;
+      cutEff[7]++;
+
+      //cout << "=====> " << jentry2 << "\t" << tightEle_ZL1_index << "\t" << tightEle_ZL2_index << "\t" << (tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() << endl;
+
+      WZTree->l_pt1 = tightEle[tightEle_ZL1_index].Pt();
+      WZTree->l_eta1 = tightEle[tightEle_ZL1_index].Eta();
+      WZTree->l_phi1 = tightEle[tightEle_ZL1_index].Phi();
+      WZTree->l_e1 = tightEle[tightEle_ZL1_index].M();
+      //WZTree->l_charge1 = chargel1;
+
+      WZTree->l_pt2  = tightEle[tightEle_ZL2_index].Pt();
+      WZTree->l_eta2 = tightEle[tightEle_ZL2_index].Eta();
+      WZTree->l_phi2 = tightEle[tightEle_ZL2_index].Phi();
+      WZTree->l_e2 = tightEle[tightEle_ZL2_index].M();
+      //WZTree->l_charge2 = chargel2;
+
+      WZTree->l_pt3  = tightEle[tightEle_WL_index].Pt();
+      WZTree->l_eta3 = tightEle[tightEle_WL_index].Eta();
+      WZTree->l_phi3 = tightEle[tightEle_WL_index].Phi();
+      WZTree->l_e3 = tightEle[tightEle_WL_index].M();
+      //WZTree->l_charge3 = chargel3;
+
       // //preselection on met
       if (info->pfMETC < 30) continue;   //Et(miss)>40GeV
-      cutEff[4]++;
+      cutEff[8]++;
 
 
-	outTree->Fill();
-	//cout<<"DEBUG: 2:" << endl;
-	//cout<<"DEBUG: 3:" << endl;
+      outTree->Fill();
+      //cout<<"DEBUG: 2:" << endl;
+      //cout<<"DEBUG: 3:" << endl;
     }//loop on entries end
     delete infile;
     infile=0, eventTree=0;
@@ -682,12 +639,12 @@ cutEff[2]++;
 	  <<"(1) Gen Events:        "<<cutEff[1]<<"\t:\t"<<((float)cutEff[1]*100.0)/(float)cutEff[0]<<std::endl
 	  <<"(2) Exactly 3 electron:  "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
 	  <<"(3) effective electron:      "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
-	  <<"(4) MET:               "<<cutEff[4]<<"\t:\t"<<((float)cutEff[4]*100.0)/(float)cutEff[3]<<std::endl;
+	  <<"(4) MET:               "<<cutEff[8]<<"\t:\t"<<((float)cutEff[8]*100.0)/(float)cutEff[7]<<std::endl;
 	  //<<"(12) ZeppenCut:                       "<<cutEff[12]<<"\t:\t"<<((float)cutEff[12]*100.)/(float)cutEff[11]<<std::endl;
   //std::cout << "Yield =  " << cutEff[9]*0.00128*WZTree->totalEventWeight<<endl;
   //--------close everything-------------
   delete info; delete gen;
-  delete genPartArr; delete muonArr; delete electronArr; delete vertexArr;
+  delete genPartArr; delete electronArr; delete vertexArr;
   delete jetArr;
 
 
