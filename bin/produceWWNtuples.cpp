@@ -114,7 +114,7 @@ int main (int argc, char** argv)
   TLorentzVector ELE,MU;
 
 
-  std::vector<TLorentzVector> tightMuon;
+std::vector<TLorentzVector> tightMuon;
   std::vector<TLorentzVector> looseMuon;
   std::vector<TLorentzVector> tightEle;
   std::vector<TLorentzVector> looseEle;
@@ -123,6 +123,7 @@ int main (int argc, char** argv)
   baconhep::TEventInfo *info  	= new baconhep::TEventInfo();
   baconhep::TGenEventInfo *gen	= new baconhep::TGenEventInfo();
   TClonesArray *genPartArr 	= new TClonesArray("baconhep::TGenParticle");
+  TClonesArray *muonArr = new TClonesArray("baconhep::TMuon");
   TClonesArray *electronArr	= new TClonesArray("baconhep::TElectron");
   TClonesArray *vertexArr	= new TClonesArray("baconhep::TVertex");
   TClonesArray *jetArr		= new TClonesArray("baconhep::TJet");
@@ -290,7 +291,8 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
 
 
     eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
-    eventTree->SetBranchAddress("Electron", &electronArr); TBranch *electronBr = eventTree->GetBranch("Electron");
+    eventTree->SetBranchAddress("Muon", &muonArr); TBranch *muonBr = eventTree->GetBranch("Muon");
+eventTree->SetBranchAddress("Electron", &electronArr); TBranch *electronBr = eventTree->GetBranch("Electron");
     eventTree->SetBranchAddress("PV",   &vertexArr); TBranch *vertexBr = eventTree->GetBranch("PV");
     eventTree->SetBranchAddress("AK4CHS",   &jetArr); TBranch *jetBr = eventTree->GetBranch("AK4CHS");    
     TBranch *genBr=0, *genPartBr=0, *lhePartBr=0;
@@ -487,146 +489,153 @@ WZTree->id_eff_Weight3 = 1.;
       }//loop17 ends
 
       if(applyTrigger==1)
-	if(! triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits)) continue;
+	if(!(triggerMenu.pass("HLT_IsoMu24_v*",info->triggerBits) || triggerMenu.pass("HLT_IsoTkMu24_v*",info->triggerBits))) continue;
 
       /////////////////THE SELECTED LEPTON
-      int nTightEle=0, nLooseEle=0;
+      int nTightMu=0, nLooseMu=0;
       double pt_cut = 15;//pvrevious=25
-      double leadelept_cut = 15;
-      electronArr->Clear();
-      electronBr->GetEntry(jentry);
-      const baconhep::TElectron *leadele = NULL;
-      const baconhep::TElectron *subele = NULL;
-      const baconhep::TElectron *subsubele = NULL;
-
-      //double leadeleE=-999, subeleE=-999, subsubeleE=-999;
+      double leadmupt_cut = 15;
+     muonArr->Clear();
+      muonBr->GetEntry(jentry);
+      const baconhep::TMuon *leadmu = NULL;
+      const baconhep::TMuon *submu = NULL;
+      const baconhep::TMuon *subsubmu = NULL;
+     double leadmue=-999, submue = -999, subsubmue = -999;
       double iso = 1.5;
-      for (int i=0; i<electronArr->GetEntries(); i++) {    //loop1 on electron begins
-	const baconhep::TElectron *ele = (baconhep::TElectron*)((*electronArr)[i]);
-	//	cout<<jentry	<<"		" <<electronArr->GetEntries() <<"		"<<	i	<<"		"<<ele->pt<<endl;
-	if (ele->pt<=pt_cut) continue;
-	if (fabs(ele->eta)>=2.5) continue;
-	if(!passEleLooseSel(ele,info->rhoIso)) continue;
-	nLooseEle++;
-	if(!passEleTightSel(ele,info->rhoIso)) continue;
-	ELE.SetPtEtaPhiM(ele->pt,ele->eta,ele->phi,0.0005109989461);
-	tightEle.push_back(ELE);
-	nTightEle++;
-	iso = ele->chHadIso + TMath::Max( 0.0,(ele->gammaIso + ele->neuHadIso - info->rhoIso*eleEffArea(ele->eta)) );
-	if(!leadele || ele->pt>leadele->pt)
+      for(Int_t i=0; i<muonArr->GetEntries(); i++) { 
+	const baconhep::TMuon *mu = (baconhep::TMuon*)((*muonArr)[i]);
+	if (mu->pt<pt_cut) continue;
+	if (fabs(mu->eta)>=2.4) continue;
+	if(!passMuonLooseSel(mu)) continue;
+	nLooseMu++;
+	if(!passMuonTightSel(mu)) continue;
+	nTightMu++;
+	MU.SetPtEtaPhiM(mu->pt,mu->eta,mu->phi,0.1056583745);
+	tightMuon.push_back(MU);
+	iso = mu->chHadIso + TMath::Max(mu->neuHadIso + mu->gammaIso - 0.5*(mu->puIso), double(0));
+	if(!leadmu || mu->pt>leadmu->pt)
 	{
-	  if(!(ele->pt>leadelept_cut)) continue;
-	  subele = leadele;
-	  leadele = ele;
-	  //leadeleE = ELE.E();
-	  WZTree->l_iso1 = iso/ele->pt;
+	  if(!(mu->pt>leadmupt_cut)) continue;
+	  submu = leadmu;
+	  leadmu = mu;
+	 // leadmue = MU.E();
+	  WZTree->l_iso1 = iso/mu->pt;
 	}
-	else if (!subele || ele->pt > subele->pt)
+	else if (!submu || mu->pt > submu->pt)
 	{
-	  subsubele =subele;
-	  subele = ele;
-	  //subeleE = ELE.E();
-	  WZTree->l_iso2 = iso/ele->pt;
+	  subsubmu = submu;
+	  submu = mu;
+	 // submue = MU.E();
+	  WZTree->l_iso2 = iso/mu->pt;
 	}
-	else if (!subsubele || ele->pt > subsubele->pt)
+	else if (!subsubmu || mu->pt > subsubmu->pt)
 	{
-	  subsubele = ele;
-	  //subsubeleE = ELE.E();
-	  WZTree->l_iso3 = iso/ele->pt;
+	  subsubmu = mu;
+	    //subsubmue = MU.E();
+	  WZTree->l_iso3 = iso/mu->pt;
 	}
-
-      } //loop1 on electron ends
-
-      if (nTightEle != 3) continue;
-      if (nLooseEle>3) continue;
+      } 
+      if (nTightMu != 3) continue;
+      if (nLooseMu>3) continue;
       cutEff[2]++;
       //cout << jentry2 << "\tTLV: tightEle = " << tightEle.size() << "\t" << tightEle[0].Pt() << "\t" << tightEle[1].Pt() << "\t" << tightEle[2].Pt() << endl;
-      if ((leadele->q>0 && subele->q>0 && subsubele>0) || (leadele->q<0 && subele->q<0 && subsubele<0))
+      if ((leadmu->q>0 && submu->q>0 && subsubmu>0) || (leadmu->q<0 && submu->q<0 && subsubmu<0))
           continue;
       cutEff[3]++;
       float charge1 = 0.0;
       float charge2 = 0.0;
-      int tightEle_ZL1_index = -1;
-      int tightEle_ZL2_index = -1;
+      int tightMu_ZL1_index = -1;
+      int tightMu_ZL2_index = -1;
       float deltaM = 900.0;
-      for(int i=0; i<nTightEle-1; i++) {
-          for(int j=i+1; j<nTightEle; j++) {
-	      if (i==0) charge1 = leadele->q;
-	      if (j==0) charge2 = leadele->q;
-	      if (i==1) charge1 = subele->q;
-	      if (j==1) charge2 = subele->q;
-	      if (i==2) charge1 = subsubele->q;
-	      if (j==2) charge2 = subsubele->q;
+      for(int i=0; i<nTightMu-1; i++) {
+          for(int j=i+1; j<nTightMu; j++) {
+	      if (i==0) charge1 = leadmu->q;
+	      if (j==0) charge2 = leadmu->q;
+	      if (i==1) charge1 = submu->q;
+	      if (j==1) charge2 = submu->q;
+	      if (i==2) charge1 = subsubmu->q;
+	      if (j==2) charge2 = subsubmu->q;
 	      if (charge1*charge2 > 0) continue;
-	      if (fabs((tightEle[i]+tightEle[j]).M()-91.1876) < deltaM) {
-	          deltaM = fabs((tightEle[i]+tightEle[j]).M()-91.1876); 
-		  tightEle_ZL1_index = i;
-		  tightEle_ZL2_index = j;
+	      if (fabs((tightMuon[i]+tightMuon[j]).M()-91.1876) < deltaM) {
+		      deltaM = fabs((tightMuon[i]+tightMuon[j]).M()-91.1876); 
+		      tightMu_ZL1_index = i;
+		      tightMu_ZL2_index = j;
               }
           }
       }
       cutEff[4]++;
       //Get index for w-boson
-      int tightEle_WL_index = -1;
-      for(int i=0; i<nTightEle; i++) {
-          if (i==tightEle_ZL1_index || i==tightEle_ZL2_index) continue;
-	  tightEle_WL_index = i;
+      int tightMu_WL_index = -1;
+      for(int i=0; i<nTightMu; i++) {
+          if (i==tightMu_ZL1_index || i==tightMu_ZL2_index) continue;
+	  tightMu_WL_index = i;
       }
       //cout << jentry2 << "\t" << tightEle_ZL1_index << "\t" << tightEle_ZL2_index << "\t" << (tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() << endl;
 
       // continue if m_ll is less then 4 GeV
-      if ((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() < 4.0) continue;
+      if ((tightMuon[tightMu_ZL1_index]+tightMuon[tightMu_ZL2_index]).M() < 4.0) continue;
       cutEff[5]++;
       // contiue if Z-mass is outside mass window of 15 GeV
-      if (fabs((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() - 91.1876) > 15.) continue;
+      if (fabs((tightMuon[tightMu_ZL1_index]+tightMuon[tightMu_ZL2_index]).M() - 91.1876) > 15.) continue;
       cutEff[6]++;
       // continue if m_lll is less then 100 GeV
-      if ((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]+tightEle[tightEle_WL_index]).M() < 100.) continue;
+      if ((tightMuon[tightMu_ZL1_index]+tightMuon[tightMu_ZL2_index]+tightMuon[tightMu_WL_index]).M() < 100.) continue;
       cutEff[7]++;
 
       //cout << "=====> " << jentry2 << "\t" << tightEle_ZL1_index << "\t" << tightEle_ZL2_index << "\t" << (tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() << endl;
 
-      WZTree->l_pt1 = tightEle[tightEle_ZL1_index].Pt();
-      WZTree->l_eta1 = tightEle[tightEle_ZL1_index].Eta();
-      WZTree->l_phi1 = tightEle[tightEle_ZL1_index].Phi();
-      WZTree->l_e1 = tightEle[tightEle_ZL1_index].M();
+      WZTree->l_pt1 = tightMuon[tightMu_ZL1_index].Pt();
+      WZTree->l_eta1 = tightMuon[tightMu_ZL1_index].Eta();
+      WZTree->l_phi1 = tightMuon[tightMu_ZL1_index].Phi();
+      WZTree->l_e1 = tightMuon[tightMu_ZL1_index].M();
       //WZTree->l_charge1 = chargel1;
 
-      WZTree->l_pt2  = tightEle[tightEle_ZL2_index].Pt();
-      WZTree->l_eta2 = tightEle[tightEle_ZL2_index].Eta();
-      WZTree->l_phi2 = tightEle[tightEle_ZL2_index].Phi();
-      WZTree->l_e2 = tightEle[tightEle_ZL2_index].M();
+      WZTree->l_pt2  = tightMuon[tightMu_ZL2_index].Pt();
+      WZTree->l_eta2 = tightMuon[tightMu_ZL2_index].Eta();
+      WZTree->l_phi2 = tightMuon[tightMu_ZL2_index].Phi();
+      WZTree->l_e2 = tightMuon[tightMu_ZL2_index].M();
       //WZTree->l_charge2 = chargel2;
 
-      WZTree->l_pt3  = tightEle[tightEle_WL_index].Pt();
-      WZTree->l_eta3 = tightEle[tightEle_WL_index].Eta();
-      WZTree->l_phi3 = tightEle[tightEle_WL_index].Phi();
-      WZTree->l_e3 = tightEle[tightEle_WL_index].M();
+      WZTree->l_pt3  = tightMuon[tightMu_WL_index].Pt();
+      WZTree->l_eta3 = tightMuon[tightMu_WL_index].Eta();
+      WZTree->l_phi3 = tightMuon[tightMu_WL_index].Phi();
+      WZTree->l_e3 = tightMuon[tightMu_WL_index].M();
       //WZTree->l_charge3 = chargel3;
 
       // //preselection on met
       if (info->pfMETC < 30) continue;   //Et(miss)>40GeV
       cutEff[8]++;
 
- if (strcmp(leptonName.c_str(),"el")==0 && isMC==1) {//loop 3 begins
-	//  apply ID, ISO SF's
-	WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, WZTree->l_eta1, hIDIsoEle);	// Get Scale factor corresponding to the pt and eta.
-	
-	WZTree->id_eff_Weight = WZTree->id_eff_Weight*GetSFs_Lepton(WZTree->l_pt1, WZTree->l_eta1, hGSFCorrEle);
-	WZTree->trig_eff_Weight = 1.0/GetSFs_Lepton(WZTree->l_pt1, WZTree->l_eta1, hTriggerEle);
-	
-	WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, WZTree->l_eta2, hIDIsoEle);	// Get Scale factor corresponding to the pt and eta.
-	
-  						// apply GSF/RECO SF's for electrons 
-	WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, WZTree->l_eta2, hGSFCorrEle);
-	WZTree->trig_eff_Weight2 = 1.0/GetSFs_Lepton(WZTree->l_pt2, WZTree->l_eta2, hTriggerEle);
-	
-	WZTree->id_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, WZTree->l_eta3, hIDIsoEle);       // Get Scale factor corresponding to the pt and eta.
-	
-	// apply GSF/RECO SF's for electrons
-	WZTree->id_eff_Weight3 = WZTree->id_eff_Weight3*GetSFs_Lepton(WZTree->l_pt3, WZTree->l_eta3, hGSFCorrEle);
-	WZTree->trig_eff_Weight3 = 1.0/GetSFs_Lepton(WZTree->l_pt3, WZTree->l_eta3, hTriggerEle);
-	}
+if (strcmp(leptonName.c_str(),"mu")==0 && isMC==1) { 
+
+	if (WZTree->run<278820){
+	  WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIDMuA);
+	  WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIDMuA);
+	  WZTree->id_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIDMuA);}
+	else{
+	  WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIDMuB);
+	  WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIDMuB);
+	  WZTree->id_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIDMuB);}
+
+
+	if (WZTree->run<278820){
+	  WZTree->id_eff_Weight = WZTree->id_eff_Weight*GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIsoMuA);
+	  WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIsoMuA);
+	  WZTree->id_eff_Weight3 = WZTree->id_eff_Weight3*GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIsoMuA);}
+	else{
+	  WZTree->id_eff_Weight = WZTree->id_eff_Weight*GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIsoMuB);
+	  WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIsoMuB);
+	  WZTree->id_eff_Weight3 = WZTree->id_eff_Weight3*GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIsoMuB);}
+
+	if (WZTree->run<278820){
+	  WZTree->trig_eff_Weight  = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hTriggerMuA);
+	  WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuA);
+	  WZTree->trig_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hTriggerMuA);}
+	else{
+	  WZTree->trig_eff_Weight  = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hTriggerMuB);
+	  WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuB);
+	  WZTree->trig_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hTriggerMuB);}
+      }
 cutEff[9]++;  												//loop 3 ends
       outTree->Fill();
       //cout<<"DEBUG: 2:" << endl;
@@ -658,8 +667,8 @@ cutEff[9]++;  												//loop 3 ends
   std::cout << std::endl;
   std::cout<<"(0) all events:        "<<cutEff[0]<<"\t:\t"<<((float)cutEff[0]*100.0)/(float)cutEff[0]<<std::endl
 	  <<"(1) Gen Events:        "<<cutEff[1]<<"\t:\t"<<((float)cutEff[1]*100.0)/(float)cutEff[0]<<std::endl
-	  <<"(2) Exactly 3 electron:  "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
-	  <<"(3) effective electron:      "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
+	  <<"(2) Exactly 3 muon:  "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
+	  <<"(3) effective muon:      "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
 	  <<"(4) MET:               "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.0)/(float)cutEff[8]<<std::endl;
 	  //<<"(12) ZeppenCut:                       "<<cutEff[12]<<"\t:\t"<<((float)cutEff[12]*100.)/(float)cutEff[11]<<std::endl;
   //std::cout << "Yield =  " << cutEff[9]*0.00128*WZTree->totalEventWeight<<endl;
