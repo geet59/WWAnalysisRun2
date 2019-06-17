@@ -786,8 +786,10 @@ void setOutputTree::setBranches()
 //  fTree->Branch("gen_top2_pt",&gen_top2_pt,"gen_top2_pt/F");
   fTree->Branch("trig_eff_Weight",&trig_eff_Weight,"trig_eff_Weight/F");
   fTree->Branch("trig_eff_Weight2",&trig_eff_Weight2,"trig_eff_Weight2/F");
-  fTree->Branch("id_eff_Weight",&id_eff_Weight,"id_eff_Weight/F");
+  fTree->Branch("trig_eff_Weight3",&trig_eff_Weight3,"trig_eff_Weight3/F");
+fTree->Branch("id_eff_Weight",&id_eff_Weight,"id_eff_Weight/F");
   fTree->Branch("id_eff_Weight2",&id_eff_Weight2,"id_eff_Weight2/F");
+ fTree->Branch("id_eff_Weight3",&id_eff_Weight3,"id_eff_Weight3/F");
   fTree->Branch("totalEventWeight",&totalEventWeight,"totalEventWeight/F");
   fTree->Branch("pu_Weight",&pu_Weight,"pu_Weight/F");
  // fTree->Branch("totalEventWeight_2",&totalEventWeight_2,"totalEventWeight_2/F");
