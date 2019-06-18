@@ -647,14 +647,25 @@ WZTree->l_e2 = tightMuon[tightMu_ZL2_index].M();
       jetBr->GetEntry(jentry);
       std::vector<int> indexGoodVBFJets;
       for ( int i=0; i<jetArr->GetEntries(); i++) 
-      {
-	      const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[i]);
+      {const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[i]);
+	      bool isCleaned = true;
+ 
 	      if (jet->pt<50) continue;
+	      for ( std::size_t j=0; j<tightEle.size(); j++) {
+		      if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
+        jet->eta,   jet->phi) < 0.4) {
+			      isCleaned = false;
+		      }
+	      }
+	      if (isCleaned==false) continue;
+	      if (jet->pt<50) continue;
+	      if (!passJetLooseSel(jet)) continue; 
+	      if (fabs(jet->eta)>=4.7) continue;
 	      indexGoodVBFJets.push_back(i);
 	      WZTree->njets++;
 	      AK4.SetPtEtaPhiM(jet->pt,jet->eta,jet->phi,jet->mass);
       }
-      if (indexGoodVBFJets.size() >2) continue;
+      if (indexGoodVBFJets.size() <=2) continue;
       cutEff[9]++;
 
       int nVBF1=-1, nVBF2=-1; 
@@ -780,7 +791,7 @@ cutEff[10]++;  												//loop 3 ends
 	  <<"(1) Gen Events:        "<<cutEff[1]<<"\t:\t"<<((float)cutEff[1]*100.0)/(float)cutEff[0]<<std::endl
 	  <<"(2) Exactly 3 electron:  "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
 //	  <<"(3) effective electron:      "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
-	  <<"(4) MET:               "<<cutEff[10]<<"\t:\t"<<((float)cutEff[10]*100.0)/(float)cutEff[10]<<std::endl;
+	  <<"(4) JET selection:                "<<cutEff[10]<<"\t:\t"<<((float)cutEff[10]*100.0)/(float)cutEff[10]<<std::endl;
 	  //<<"(12) ZeppenCut:                       "<<cutEff[12]<<"\t:\t"<<((float)cutEff[12]*100.)/(float)cutEff[11]<<std::endl;
   //--------close everything-------------
   delete info; delete gen;
