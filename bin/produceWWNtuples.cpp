@@ -307,7 +307,7 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
     for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
     {
       infoBr->GetEntry(jentry);	    
-if	(jentry2>10000) exit(0);
+//if	(jentry2>10000) exit(0);
 
 
       int GenPassCut = 0;
@@ -587,50 +587,29 @@ if (nTightEle+nTightMu!= 3) continue;
 if (nLooseEle+nLooseMu> 3) continue;
 
 if (nTightEle!= 2) continue;
-//      cout <<jentry2<<"    "<<nTightEle+nTightMu<<endl;
 if (nLooseEle>2) continue;
-  //    cout <<jentry2<<"    "<<nLooseEle+nLooseMu<<endl;
 cutEff[2]++;
-//cout<<"DEBUG: 2:" << endl;
 
-//cout<<"DEBUG: 02:" << endl;
     float charge1 = 0.0;
       float charge2 = 0.0;
       int tightEle_ZL1_index = -1;
       int tightEle_ZL2_index = -1;
-      float deltaM = 90.0;
-      for(int i=0; i<nTightEle-1; i++) {
-          for(int j=i+1; j<nTightEle; j++) {
-	      if (i==0) charge1 = leadele->q;
-	      if (j==0) charge2 = leadele->q;
-	      if (i==1) charge1 = subele->q;
-	      if (j==1) charge2 = subele->q;
- if (i==2) charge1 = subsubele->q;
-      if (j==2) charge2 = subsubele->q;
-	      if (charge1*charge2 > 0) continue;
-	      if (fabs((tightEle[i]+tightEle[j]).M()-91.1876) < deltaM) {
-	          deltaM = fabs((tightEle[i]+tightEle[j]).M()-91.1876); 
-		  tightEle_ZL1_index = i;
-		  tightEle_ZL2_index = j;
-     //   cout<<"tightEle_ZL1_indexNew : "<<tightEle_ZL1_index<<endl;
-     //   cout<<"tightEle_ZL2_indexNew : "<<tightEle_ZL2_index<<endl;
-    //          cout <<"jentry2   "<<jentry2<<"    "<<  deltaM<<endl;
-    }
-          }
+      if (leadele->q * subele->q > 0.) continue;
+      if (tightEle[0].Pt() > tightEle[1].Pt()) {
+          tightEle_ZL1_index = 0;
+          tightEle_ZL2_index = 1;
+      } else {
+          tightEle_ZL1_index = 1;
+          tightEle_ZL2_index = 0;
       }
-//	cout<<"tightEle_ZL1_index : "<<tightEle_ZL1_index<<endl;
-//	cout<<"tightEle_ZL2_index : "<<tightEle_ZL2_index<<endl;
       cutEff[4]++;
-//cout<<"DEBUG: 03:" << endl;
       //Get index for w-boson
   if (nTightMu!= 1) continue;
 if (nLooseMu> 1) continue;
     int tightMu_WL_index = -1;
-      for(int i=0; i<nTightMu; i++) {
-	  tightMu_WL_index = i;
-//	cout<<"WL : "<<tightMu_WL_index<<endl;
+      if (leadmu) {
+	  tightMu_WL_index = 0;
 }
-//cout << jentry2 << "\t" << tightEle_ZL1_index << "\t" << tightEle_ZL2_index << "\t" << (tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() << endl;
 
       // continue if m_ll is less then 4 GeV
       if ((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() < 4.0) continue;
@@ -646,19 +625,20 @@ if (nLooseMu> 1) continue;
 
 
       WZTree->l_pt1 = tightEle[tightEle_ZL1_index].Pt();
-//     cout<<"DEBUG: 4:" << endl;
-
+//      cout<<WZTree->l_pt1<<"   pt1"<<endl;
       WZTree->l_eta1 = tightEle[tightEle_ZL1_index].Eta();
       WZTree->l_phi1 = tightEle[tightEle_ZL1_index].Phi();
       WZTree->l_e1 = tightEle[tightEle_ZL1_index].M();
 
       WZTree->l_pt2  = tightEle[tightEle_ZL2_index].Pt();
+  //    cout<<WZTree->l_pt2<<"   pt2"<<endl;
       WZTree->l_eta2 = tightEle[tightEle_ZL2_index].Eta();
       WZTree->l_phi2 = tightEle[tightEle_ZL2_index].Phi();
       WZTree->l_e2 = tightEle[tightEle_ZL2_index].M();
  //    cout<<"DEBUG: 4:" << endl;
 
       WZTree->l_pt3 = tightMuon[tightMu_WL_index].Pt();
+    //  cout<<WZTree->l_pt3<<"   pt3"<<endl;
       WZTree->l_eta3 = tightMuon[tightMu_WL_index].Eta();
       WZTree->l_phi3 = tightMuon[tightMu_WL_index].Phi();
       WZTree->l_e3 = tightMuon[tightMu_WL_index].M();
