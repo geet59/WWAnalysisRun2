@@ -583,65 +583,61 @@ int nTightMu=0, nLooseMu=0;
 	}
       }  
  
-if (nTightEle+nTightMu!= 3) continue;
-if (nLooseEle+nLooseMu> 3) continue;
+      if (nTightEle+nTightMu!= 3) continue;
+      if (nLooseEle+nLooseMu> 3) continue;
 
-if (nTightEle!= 2) continue;
-if (nLooseEle>2) continue;
-cutEff[2]++;
+      if (nTightMu!= 2) continue;
+      if (nLooseMu>2) continue;
+      cutEff[2]++;
 
-    float charge1 = 0.0;
-      float charge2 = 0.0;
-      int tightEle_ZL1_index = -1;
-      int tightEle_ZL2_index = -1;
-      if (leadele->q * subele->q > 0.) continue;
-      if (tightEle[0].Pt() > tightEle[1].Pt()) {
-          tightEle_ZL1_index = 0;
-          tightEle_ZL2_index = 1;
-      } else {
-          tightEle_ZL1_index = 1;
-          tightEle_ZL2_index = 0;
+      int tightMu_ZL1_index = -1;
+      int tightMu_ZL2_index = -1;
+      if (leadmu->q * submu->q > 0.) continue;
+      if (tightMuon[0].Pt() > tightMuon[1].Pt()) {
+          tightMu_ZL1_index = 0;
+          tightMu_ZL2_index = 1;
+      }
+      else {
+          tightMu_ZL1_index = 1;
+          tightMu_ZL2_index = 0;
       }
       cutEff[4]++;
       //Get index for w-boson
-  if (nTightMu!= 1) continue;
-if (nLooseMu> 1) continue;
-    int tightMu_WL_index = -1;
-      if (leadmu) {
-	  tightMu_WL_index = 0;
-}
+      if (nTightEle!= 1) continue;
+      if (nLooseEle> 1) continue;
+      int tightEle_WL_index = -1;
+      if (leadele) {
+	  tightEle_WL_index = 0;
+      }
 
       // continue if m_ll is less then 4 GeV
-      if ((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() < 4.0) continue;
+      if ((tightMuon[tightMu_ZL1_index]+tightMuon[tightMu_ZL2_index]).M() < 4.0) continue;
     //cout<<"Debug X: "<<(tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M()<<endl;
 	  cutEff[5]++;
       // contiue if Z-mass is outside mass window of 15 GeV
-      if (fabs((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() - 91.1876) > 15.) continue;
+      if (fabs((tightMuon[tightMu_ZL1_index]+tightMuon[tightMu_ZL2_index]).M() - 91.1876) > 15.) continue;
       cutEff[6]++;
       // continue if m_lll is less then 100 GeV
-      if ((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]+tightMuon[tightMu_WL_index]).M() < 100.) continue;
+      if ((tightMuon[tightMu_ZL1_index]+tightMuon[tightMu_ZL2_index]+tightEle[tightEle_WL_index]).M() < 100.) continue;
 // cout<<"Debug X :  "<<(tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]+tightMuon[tightMu_WL_index]).M()<<endl;
     cutEff[7]++;
 
 
-      WZTree->l_pt1 = tightEle[tightEle_ZL1_index].Pt();
-//      cout<<WZTree->l_pt1<<"   pt1"<<endl;
-      WZTree->l_eta1 = tightEle[tightEle_ZL1_index].Eta();
-      WZTree->l_phi1 = tightEle[tightEle_ZL1_index].Phi();
-      WZTree->l_e1 = tightEle[tightEle_ZL1_index].M();
+     WZTree->l_pt1 = tightMuon[tightMu_ZL1_index].Pt();
+      WZTree->l_eta1 = tightMuon[tightMu_ZL1_index].Eta();
+      WZTree->l_phi1 = tightMuon[tightMu_ZL1_index].Phi();
+      WZTree->l_e1 = tightMuon[tightMu_ZL1_index].M();
 
-      WZTree->l_pt2  = tightEle[tightEle_ZL2_index].Pt();
-  //    cout<<WZTree->l_pt2<<"   pt2"<<endl;
-      WZTree->l_eta2 = tightEle[tightEle_ZL2_index].Eta();
-      WZTree->l_phi2 = tightEle[tightEle_ZL2_index].Phi();
-      WZTree->l_e2 = tightEle[tightEle_ZL2_index].M();
- //    cout<<"DEBUG: 4:" << endl;
+ WZTree->l_pt2  = tightMuon[tightMu_ZL2_index].Pt();
+      WZTree->l_eta2 = tightMuon[tightMu_ZL2_index].Eta();
+      WZTree->l_phi2 = tightMuon[tightMu_ZL2_index].Phi();
+WZTree->l_e2 = tightMuon[tightMu_ZL2_index].M();
 
-      WZTree->l_pt3 = tightMuon[tightMu_WL_index].Pt();
+      WZTree->l_pt3 = tightEle[tightEle_WL_index].Pt();
     //  cout<<WZTree->l_pt3<<"   pt3"<<endl;
-      WZTree->l_eta3 = tightMuon[tightMu_WL_index].Eta();
-      WZTree->l_phi3 = tightMuon[tightMu_WL_index].Phi();
-      WZTree->l_e3 = tightMuon[tightMu_WL_index].M();
+      WZTree->l_eta3 = tightEle[tightEle_WL_index].Eta();
+      WZTree->l_phi3 = tightEle[tightEle_WL_index].Phi();
+      WZTree->l_e3 = tightEle[tightEle_WL_index].M();
 
       // //preselection on met
       if (info->pfMETC < 30) continue;   //Et(miss)>40GeV
