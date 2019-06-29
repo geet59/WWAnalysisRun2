@@ -69,10 +69,11 @@ os.system('xrdcp -f summary.dat root://cmseos.fnal.gov/'+outputFolder+'/summary.
 os.system('xrdcp -f main.patch root://cmseos.fnal.gov/'+outputFolder+'/main.patch')
 
 samples = [
- ( 0.0947916,	"WZTo3LNu_2Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",       2280039, 0, "/Samples/190527_225923/0000/"),
- ( 0.1341072,	"WZTo3LNu_3Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",      2080787, 0, "/Samples/190527_230429/0000/"),
- ( 0.4155876,	"WZTo3LNu_1Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",      463529, 0, "/Samples/190527_225544/0000/"),
-	#	Doubly Charged Higgs sample
+ ( 0.0947916,	"WZTo3LNu_2Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",       2280039, 0, "/Samples/190624_214002/0000/"),
+ ( 0.1341072,	"WZTo3LNu_3Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",      2080787, 0, "/Samples/190624_220658/0000/"),
+ ( 0.4155876,	"WZTo3LNu_1Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",      463529, 0, "/Samples/190624_213657/0000/"),
+ ( 0.0176, "WLLJJ_WToLNu_EWK_TuneCUETP8M1_13TeV_madgraph-madspin-pythia8", 1500000, 0, "/Samples/190624_213021/0000/"),
+#	Doubly Charged Higgs sample
 
 	#	Singly Charged Higgs sample: Z -> LL
 
