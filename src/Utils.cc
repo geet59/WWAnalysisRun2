@@ -217,20 +217,24 @@ bool passEleTightSel(const baconhep::TElectron *electron, const double rho)
     if(electron->sieie              >= 0.00998)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00308)                        return false;
     if(fabs(electron->dPhiIn)       >= 0.08160)                        return false;
-    if(electron->hovere             >= 0.04140)                        return false;
-    if(fabs(1.0 - electron->eoverp) >= 0.12900*(electron->ecalEnergy)) return false;
+    if(electron->hovere             >= 0.081641)                        return false;
+    if(fabs(1.0 - electron->eoverp) >= 0.012900*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
-  } else {
+ if(electron->d0                    >= 0.05)                                            return false;
+if(electron->dz                    >= 0.1)                                            return false;
+ } else {
     //if(iso < 0.0571*(electron->pt)  || iso > 0.16*(electron->pt)) return false;
     if(iso >= 0.0571*(electron->pt)) return false;
 
     if(electron->sieie              >= 0.02920)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00605)                        return false;
     if(fabs(electron->dPhiIn)       >= 0.03940)                        return false;
-    if(electron->hovere             >= 0.06410)                        return false;
-    if(fabs(1.0 - electron->eoverp) >= 0.12900*(electron->ecalEnergy)) return false;
+    if(electron->hovere             >= 0.08)                        return false;
+    if(fabs(1.0 - electron->eoverp) >= 0.012900*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
-  }
+  if(electron->d0                    >= 0.1)                                            return false; 
+if(electron->dz                    >= 0.2)                                            return false;
+}
 
   return true;
 }
@@ -443,7 +447,9 @@ bool passMuonTightSel(const baconhep::TMuon *muon)
   double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
   //if(iso < 0.15*(muon->pt) || iso > 3.5*(muon->pt)) return false;
   if(iso >= 0.15*(muon->pt)) return false;
-  return true;
+ if(muon->d0                    >= 0.02)                                            return false; 
+if(muon->dz                    >= 0.1)                                            return false;
+ return true;
 }
 //-------------------------------------------------------------------------------------------------
 bool passMuonSoftSel(const baconhep::TMuon *muon)

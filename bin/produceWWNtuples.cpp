@@ -130,7 +130,7 @@ int main (int argc, char** argv)
   TClonesArray *lheWgtArr	= new TClonesArray("baconhep::TLHEWeight");
 
 
-  char command1[3000];
+ /* char command1[3000];
   char command2[3000];
 
   if ( cluster == "lxplus")
@@ -149,7 +149,10 @@ sprintf(command1,"eos root://cmseos.fnal.gov find %s | grep root | awk '{print \
   char command3[300];
   sprintf(command3, "rm listTemp_%s.txt", outputFile.c_str());
   system(command3);
-
+*/
+  char list1[2000];
+  sprintf (list1, "%s", inputFile.c_str());
+  ifstream rootList (list1);
   int fileCounter=0;
 
   vector<TString>  sampleName; 
@@ -612,16 +615,16 @@ if (nLooseMu> 1) continue;
 }
 
       // continue if m_ll is less then 4 GeV
-      if ((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() < 4.0) continue;
+      //if ((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() < 4.0) continue;
     //cout<<"Debug X: "<<(tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M()<<endl;
-	  cutEff[5]++;
+//	  cutEff[5]++;
       // contiue if Z-mass is outside mass window of 15 GeV
       if (fabs((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M() - 91.1876) > 15.) continue;
       cutEff[6]++;
       // continue if m_lll is less then 100 GeV
-      if ((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]+tightMuon[tightMu_WL_index]).M() < 100.) continue;
+  //    if ((tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]+tightMuon[tightMu_WL_index]).M() < 100.) continue;
 // cout<<"Debug X :  "<<(tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]+tightMuon[tightMu_WL_index]).M()<<endl;
-    cutEff[7]++;
+    //cutEff[7]++;
 
 
       WZTree->l_pt1 = tightEle[tightEle_ZL1_index].Pt();
@@ -642,12 +645,92 @@ if (nLooseMu> 1) continue;
       WZTree->l_eta3 = tightMuon[tightMu_WL_index].Eta();
       WZTree->l_phi3 = tightMuon[tightMu_WL_index].Phi();
       WZTree->l_e3 = tightMuon[tightMu_WL_index].M();
-
+      WZTree->dilep_m = (tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]).M();
+      WZTree->trilep_m = (tightEle[tightEle_ZL1_index]+tightEle[tightEle_ZL2_index]+tightMuon[tightMu_WL_index]).M();
       // //preselection on met
       if (info->pfMETC < 30) continue;   //Et(miss)>40GeV
       cutEff[8]++;
 
- if (strcmp(leptonName.c_str(),"el")==0 && isMC==1) {//loop 3 begins
+ jetArr->Clear();
+      jetBr->GetEntry(jentry);
+      std::vector<int> indexGoodVBFJets;
+      for ( int i=0; i<jetArr->GetEntries(); i++) 
+      {const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[i]);
+	      bool isCleaned = true;
+ 
+	      if (jet->pt<30) continue;
+	      for ( std::size_t j=0; j<tightEle.size(); j++) {
+		      if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
+        jet->eta,   jet->phi) < 0.4) {
+			      isCleaned = false;
+		      }
+	      }
+	     for ( std::size_t j=0; j<tightMuon.size(); j++) {
+		      if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
+		      jet->eta,   jet->phi) < 0.4) {
+			      isCleaned = false;
+		      }
+	     }
+	     if (isCleaned==false) continue;
+	      if (jet->pt<30) continue;
+	      if (!passJetLooseSel(jet)) continue; 
+	      if (fabs(jet->eta)>=4.7) continue;
+	      indexGoodVBFJets.push_back(i);
+	      WZTree->njets++;
+	      AK4.SetPtEtaPhiM(jet->pt,jet->eta,jet->phi,jet->mass);
+      }
+      if (indexGoodVBFJets.size() <=2) continue;
+      cutEff[9]++;
+      int nVBF1=-1, nVBF2=-1; 
+      double jetselectid[2]={-999, -999};
+      double jetselectpt[2]={0, 0};
+      for (std::size_t i=0; i<indexGoodVBFJets.size(); i++){
+	      const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[indexGoodVBFJets.at(i)]);
+	      if(jet->pt<30) continue;
+	      if(jet->pt>jetselectpt[1]){
+		      jetselectpt[0]=jetselectpt[1];
+		      jetselectid[0]=jetselectid[1];
+		      jetselectpt[1]=jet->pt;
+		      jetselectid[1]=i;
+	      }
+	      else if(jet->pt>jetselectpt[0])
+	      {
+		      jetselectpt[0]=jet->pt;
+		      jetselectid[0]=i;
+	      }
+      }
+      if (jetselectid[0]<0)continue;
+      if (jetselectid[1]<0)continue;
+
+	nVBF1 = indexGoodVBFJets.at(jetselectid[1]); //save position of the 1st vbf jet
+	nVBF2 = indexGoodVBFJets.at(jetselectid[0]); //save position of the 2nd vbf jet
+
+	const baconhep::TJet *jet1 = (baconhep::TJet*)((*jetArr)[nVBF1]);
+	const baconhep::TJet *jet2 = (baconhep::TJet*)((*jetArr)[nVBF2]);
+	VBF1.SetPtEtaPhiM(jet1->pt,jet1->eta,jet1->phi,jet1->mass);
+	VBF2.SetPtEtaPhiM(jet2->pt,jet2->eta,jet2->phi,jet2->mass);
+	TOT = VBF1 + VBF2;
+	WZTree->vbf_maxpt_j1_pt = jet1->pt;
+	WZTree->vbf_maxpt_j1_eta = jet1->eta;
+	WZTree->vbf_maxpt_j1_phi = jet1->phi;
+	WZTree->vbf_maxpt_j1_e = VBF1.E();
+	WZTree->vbf_maxpt_j1_mass = VBF1.M();
+
+	WZTree->vbf_maxpt_j2_pt = jet2->pt;
+	WZTree->vbf_maxpt_j2_eta = jet2->eta;
+	WZTree->vbf_maxpt_j2_phi = jet2->phi;
+	WZTree->vbf_maxpt_j2_e = VBF2.E();
+	WZTree->vbf_maxpt_j2_mass = VBF2.M();
+	if (TOT.M()<500) continue;
+	cutEff[10]++;
+	WZTree->vbf_maxpt_jj_Deta = abs(VBF1.Eta() - VBF2.Eta());
+	if (abs(VBF1.Eta() - VBF2.Eta()) <2.5) continue;
+	cutEff[11]++;
+	indexGoodVBFJets.clear();
+	cutEff[12]++;
+	WZTree->ZeppenfeldW1 =(((LEP1+LEP2+LEP3).Eta()) - ((VBF1.Eta() + VBF2.Eta())/2.0));
+
+	if (strcmp(leptonName.c_str(),"el")==0 && isMC==1) {//loop 3 begins
 	//  apply ID, ISO SF's
 	WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, WZTree->l_eta1, hIDIsoEle);	// Get Scale factor corresponding to the pt and eta.
 	
@@ -696,7 +779,7 @@ if (strcmp(leptonName.c_str(),"mu")==0 && isMC==1) {
 	  WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuB);
 	  WZTree->trig_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hTriggerMuB);}
 }
-cutEff[9]++;  												//loop 3 ends
+cutEff[13]++;  												//loop 3 ends
      outTree->Fill();
       //cout<<"DEBUG: 2:" << endl;
  //     cout<<"DEBUG: 3:" << endl;
@@ -729,9 +812,9 @@ cutEff[9]++;  												//loop 3 ends
 	  <<"(1) Gen Events:        "<<cutEff[1]<<"\t:\t"<<((float)cutEff[1]*100.0)/(float)cutEff[0]<<std::endl
 	  <<"(2) Exactly 3 electron:  "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
 //	  <<"(3) effective electron:      "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
-	  <<"(4) MET:               "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.0)/(float)cutEff[8]<<std::endl;
+	 // <<"(4) MET:               "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.0)/(float)cutEff[8]<<std::endl;
 	  //<<"(12) ZeppenCut:                       "<<cutEff[12]<<"\t:\t"<<((float)cutEff[12]*100.)/(float)cutEff[11]<<std::endl;
-  //--------close everything-------------
+ <<"(13) Events passed all cuts:                       "<<cutEff[13]<<"\t:\t"<<((float)cutEff[13]*100.)/(float)cutEff[12]<<std::endl;  //--------close everything-------------
   delete info; delete gen;
   delete genPartArr; delete electronArr; delete vertexArr;
   delete jetArr;
