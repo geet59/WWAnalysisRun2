@@ -663,6 +663,12 @@ int nTightMu=0, nLooseMu=0;
 			      isCleaned = false;
 		      }
 	      }
+	      for ( std::size_t j=0; j<tightMuon.size(); j++) {
+		      if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
+		      jet->eta,   jet->phi) < 0.4) {
+			      isCleaned = false;
+		      }
+	      }
 	      if (isCleaned==false) continue;
 	      if (jet->pt<30) continue;
 	      if (!passJetLooseSel(jet)) continue; 
