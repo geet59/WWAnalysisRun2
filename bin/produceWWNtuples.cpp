@@ -685,7 +685,7 @@ WZTree->id_eff_Weight3 = 1.;
 	if (TOT.M()<500) continue;
 	cutEff[10]++;
 	WZTree->vbf_maxpt_jj_Deta = abs(VBF1.Eta() - VBF2.Eta());
-	if (abs(VBF1.Eta() - VBF2.Eta()) <2.5) continue;
+	if (fabs(VBF1.Eta() - VBF2.Eta()) <2.5) continue;
 	cutEff[11]++;
 	indexGoodVBFJets.clear();
 	cutEff[12]++;
