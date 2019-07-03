@@ -220,8 +220,8 @@ bool passEleTightSel(const baconhep::TElectron *electron, const double rho)
     if(electron->hovere             >= 0.081641)                        return false;
     if(fabs(1.0 - electron->eoverp) >= 0.01290*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
-    if(electron->d0                    >= 0.05)                        return false;
-    if(electron->dz                    >= 0.1)                        return false;
+    if(fabs(electron->d0)                    >= 0.05)                        return false;
+    if(fabs(electron->dz)                    >= 0.1)                        return false;
   } else {
     //if(iso < 0.0571*(electron->pt)  || iso > 0.16*(electron->pt)) return false;
     if(iso >= 0.0571*(electron->pt)) return false;
@@ -232,8 +232,8 @@ bool passEleTightSel(const baconhep::TElectron *electron, const double rho)
     if(electron->hovere             >= 0.08)                        return false;
     if(fabs(1.0 - electron->eoverp) >= 0.01290*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
-    if(electron->d0                    >= 0.1)                        return false;
-    if(electron->dz                    >= 0.2)                        return false;
+    if(fabs(electron->d0)                    >= 0.1)                        return false;
+    if(fabs(electron->dz)                    >= 0.2)                        return false;
 
   }
 
@@ -448,8 +448,10 @@ bool passMuonTightSel(const baconhep::TMuon *muon)
   double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
   //if(iso < 0.15*(muon->pt) || iso > 3.5*(muon->pt)) return false;
   if(iso >= 0.15*(muon->pt)) return false;
-  if(muon->d0                    >= 0.02)                        return false;
-    if(muon->dz                    >= 0.1)                        return false;
+if(fabs(muon->d0)                    >= 0.02)                                            return false; 
+  double trk_iso = muon->trkIso/(muon->pt); 
+  if (trk_iso >= 0.4) return false;
+if(fabs(muon->dz) >= 0.1) return false;
 return true;
 }
 //-------------------------------------------------------------------------------------------------
