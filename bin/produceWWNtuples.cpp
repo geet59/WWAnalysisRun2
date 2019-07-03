@@ -730,7 +730,14 @@ if (nLooseMu> 1) continue;
 	cutEff[12]++;
 	WZTree->ZeppenfeldW1 =(((LEP1+LEP2+LEP3).Eta()) - ((VBF1.Eta() + VBF2.Eta())/2.0));
 
-	if (strcmp(leptonName.c_str(),"el")==0 && isMC==1) {//loop 3 begins
+if(nTightMu>0){
+      WZTree->type=0;
+      leptonName = "mu";	// Added this part for neutrino pz calculation in case there is w-boson.
+    }else{
+      WZTree->type=1;
+      leptonName = "el";
+}	
+if (strcmp(leptonName.c_str(),"el")==0 && isMC==1) {//loop 3 begins
 	//  apply ID, ISO SF's
 	WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, WZTree->l_eta1, hIDIsoEle);	// Get Scale factor corresponding to the pt and eta.
 	

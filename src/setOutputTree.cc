@@ -92,7 +92,7 @@ id_eff_Weight3        =1.;
   nu_pz_run2_oth	=-999;
   nu_pz_run2_type	=-999;
   nu_pz_isre	=1;*/
-//  type = -1;
+  type = -1;
   l_pt1		=-999;
   l_eta1       	=-999;
   l_phi1       	=-999;
@@ -843,8 +843,8 @@ fTree->Branch("id_eff_Weight",&id_eff_Weight,"id_eff_Weight/F");
   fTree->Branch("nu_pz_run2",&nu_pz_run2,"nu_pz_run2/F");
   fTree->Branch("nu_pz_run2_oth",&nu_pz_run2_oth,"nu_pz_run2_oth/F");
   fTree->Branch("nu_pz_run2_type",&nu_pz_run2_type,"nu_pz_run2_type/I");
-  fTree->Branch("nu_pz_isre",&nu_pz_isre,"nu_pz_isre/I");
-  fTree->Branch("type",&type,"type/I");*/
+  fTree->Branch("nu_pz_isre",&nu_pz_isre,"nu_pz_isre/I");*/
+  fTree->Branch("type",&type,"type/I");
   fTree->Branch("l_pt1",&l_pt1,"l_pt1/F");
   fTree->Branch("l_eta1",&l_eta1,"l_eta1/F");
   fTree->Branch("l_phi1",&l_phi1,"l_phi1/F");

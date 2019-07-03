@@ -109,8 +109,8 @@ float id_eff_Weight;
   float nu_pz_run2;
   float nu_pz_run2_oth;
   int nu_pz_run2_type;
-  int nu_pz_isre;
-  int type;*/
+  int nu_pz_isre;*/
+  int type;
   float l_pt1;
   float l_eta1;
   float l_phi1;
