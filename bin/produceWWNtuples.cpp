@@ -611,8 +611,38 @@ WZTree->id_eff_Weight3 = 1.;
       WZTree->dilep_m = (tightMuon[tightMu_ZL1_index]+tightMuon[tightMu_ZL2_index]).M();
       WZTree->trilep_m = (tightMuon[tightMu_ZL1_index]+tightMuon[tightMu_ZL2_index]+tightMuon[tightMu_WL_index]).M();
       //WZTree->l_charge3 = chargel3;
+/*if (strcmp(leptonName.c_str(),"mu")==0 && isMC==1) {
 
-      // //preselection on met
+        if (WZTree->run<278820){
+          WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIDMuA);
+          WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIDMuA);
+          WZTree->id_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIDMuA);}
+        else{
+          WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIDMuB);
+          WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIDMuB);
+          WZTree->id_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIDMuB);}
+
+cout<<WZTree->id_eff_Weight<<endl;
+        if (WZTree->run<278820){
+          WZTree->id_eff_Weight = WZTree->id_eff_Weight*GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIsoMuA);
+          WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIsoMuA);
+          WZTree->id_eff_Weight3 = WZTree->id_eff_Weight3*GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIsoMuA);}
+        else{
+          WZTree->id_eff_Weight = WZTree->id_eff_Weight*GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIsoMuB);
+          WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIsoMuB);
+          WZTree->id_eff_Weight3 = WZTree->id_eff_Weight3*GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIsoMuB);}
+
+        if (WZTree->run<278820){
+          WZTree->trig_eff_Weight  = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hTriggerMuA);
+          WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuA);
+          WZTree->trig_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hTriggerMuA);}
+        else{
+          WZTree->trig_eff_Weight  = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hTriggerMuB);
+          WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuB);
+          WZTree->trig_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hTriggerMuB);}
+      }
+cutEff[8]++;
+  */    // //preselection on met
       if (info->pfMETC < 30) continue;   //Et(miss)>40GeV
       cutEff[8]++;
 
@@ -691,7 +721,10 @@ WZTree->id_eff_Weight3 = 1.;
 	cutEff[12]++;
 	WZTree->ZeppenfeldW1 =(((LEP1+LEP2+LEP3).Eta()) - ((VBF1.Eta() + VBF2.Eta())/2.0));
 
-	if (strcmp(leptonName.c_str(),"mu")==0 && isMC==1) { 
+if(nTightMu>0){
+   WZTree->type=0; 
+      leptonName = "mu";	// Added this part for neutrino pz calculation in case there is w-boson.
+}	if (strcmp(leptonName.c_str(),"mu")==0 && isMC==1) { 
 
 	if (WZTree->run<278820){
 	  WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIDMuA);
@@ -701,6 +734,7 @@ WZTree->id_eff_Weight3 = 1.;
 	  WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIDMuB);
 	  WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIDMuB);
 	  WZTree->id_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIDMuB);}
+//cout<<WZTree->id_eff_Weight<<endl;
 
 
 	if (WZTree->run<278820){
@@ -720,7 +754,7 @@ WZTree->id_eff_Weight3 = 1.;
 	  WZTree->trig_eff_Weight  = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hTriggerMuB);
 	  WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuB);
 	  WZTree->trig_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hTriggerMuB);}
-      }
+cout<<WZTree->trig_eff_Weight<<endl;      }
 	cutEff[13]++;  												//loop 3 ends
       outTree->Fill();
       //cout<<"DEBUG: 2:" << endl;

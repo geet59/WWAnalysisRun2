@@ -447,7 +447,7 @@ bool passMuonTightSel(const baconhep::TMuon *muon)
   if(iso >= 0.15*(muon->pt)) return false;
   if(fabs(muon->d0)                    >= 0.02)                                            return false; 
   double trk_iso = muon->trkIso/(muon->pt); 
-  if (trk_iso > 0.4) return false;
+  if (trk_iso >= 0.4) return false;
   if(fabs(muon->dz) >= 0.1) return false;
   return true;
 }
