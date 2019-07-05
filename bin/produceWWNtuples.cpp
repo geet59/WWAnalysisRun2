@@ -582,7 +582,7 @@ WZTree->id_eff_Weight3 = 1.;
 
       // continue if m_ll is less then 4 GeV
       //      if ((tightMuon[tightMu_ZL1_index]+tightMuon[tightMu_ZL2_index]).M() < 4.0) continue;
-      //    cutEff[5]++;
+      cutEff[5]++;
       // contiue if Z-mass is outside mass window of 15 GeV
       if (fabs((tightMuon[tightMu_ZL1_index]+tightMuon[tightMu_ZL2_index]).M() - 91.1876) > 15.) continue;
       cutEff[6]++;
@@ -610,41 +610,9 @@ WZTree->id_eff_Weight3 = 1.;
       WZTree->l_e3 = tightMuon[tightMu_WL_index].M();
       WZTree->dilep_m = (tightMuon[tightMu_ZL1_index]+tightMuon[tightMu_ZL2_index]).M();
       WZTree->trilep_m = (tightMuon[tightMu_ZL1_index]+tightMuon[tightMu_ZL2_index]+tightMuon[tightMu_WL_index]).M();
-      //WZTree->l_charge3 = chargel3;
-/*if (strcmp(leptonName.c_str(),"mu")==0 && isMC==1) {
-
-        if (WZTree->run<278820){
-          WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIDMuA);
-          WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIDMuA);
-          WZTree->id_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIDMuA);}
-        else{
-          WZTree->id_eff_Weight = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIDMuB);
-          WZTree->id_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIDMuB);
-          WZTree->id_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIDMuB);}
-
-cout<<WZTree->id_eff_Weight<<endl;
-        if (WZTree->run<278820){
-          WZTree->id_eff_Weight = WZTree->id_eff_Weight*GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIsoMuA);
-          WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIsoMuA);
-          WZTree->id_eff_Weight3 = WZTree->id_eff_Weight3*GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIsoMuA);}
-        else{
-          WZTree->id_eff_Weight = WZTree->id_eff_Weight*GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hIsoMuB);
-          WZTree->id_eff_Weight2 = WZTree->id_eff_Weight2*GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hIsoMuB);
-          WZTree->id_eff_Weight3 = WZTree->id_eff_Weight3*GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hIsoMuB);}
-
-        if (WZTree->run<278820){
-          WZTree->trig_eff_Weight  = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hTriggerMuA);
-          WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuA);
-          WZTree->trig_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hTriggerMuA);}
-        else{
-          WZTree->trig_eff_Weight  = GetSFs_Lepton(WZTree->l_pt1, abs(WZTree->l_eta1), hTriggerMuB);
-          WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuB);
-          WZTree->trig_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hTriggerMuB);}
-      }
-cutEff[8]++;
-  */    // //preselection on met
+      
       if (info->pfMETC < 30) continue;   //Et(miss)>40GeV
-      cutEff[8]++;
+      cutEff[7]++;
 
       jetArr->Clear();
       jetBr->GetEntry(jentry);
@@ -669,7 +637,7 @@ cutEff[8]++;
 	      AK4.SetPtEtaPhiM(jet->pt,jet->eta,jet->phi,jet->mass);
       }
       if (indexGoodVBFJets.size() <=2) continue;
-      cutEff[9]++;
+      cutEff[8]++;
 
       int nVBF1=-1, nVBF2=-1; 
       double jetselectid[2]={-999, -999};
@@ -713,12 +681,12 @@ cutEff[8]++;
 	WZTree->vbf_maxpt_j2_mass = VBF2.M();
 
 	if (TOT.M()<500) continue;
-	cutEff[10]++;
+	cutEff[9]++;
 	WZTree->vbf_maxpt_jj_Deta = abs(VBF1.Eta() - VBF2.Eta());
 	if (fabs(VBF1.Eta() - VBF2.Eta()) <2.5) continue;
-	cutEff[11]++;
+	cutEff[10]++;
 	indexGoodVBFJets.clear();
-	cutEff[12]++;
+	cutEff[11]++;
 	WZTree->ZeppenfeldW1 =(((LEP1+LEP2+LEP3).Eta()) - ((VBF1.Eta() + VBF2.Eta())/2.0));
 
 if(nTightMu>0){
@@ -755,7 +723,7 @@ if(nTightMu>0){
 	  WZTree->trig_eff_Weight2 = GetSFs_Lepton(WZTree->l_pt2, abs(WZTree->l_eta2), hTriggerMuB);
 	  WZTree->trig_eff_Weight3 = GetSFs_Lepton(WZTree->l_pt3, abs(WZTree->l_eta3), hTriggerMuB);}
 cout<<WZTree->trig_eff_Weight<<endl;      }
-	cutEff[13]++;  												//loop 3 ends
+	cutEff[12]++;  												//loop 3 ends
       outTree->Fill();
       //cout<<"DEBUG: 2:" << endl;
       //cout<<"DEBUG: 3:" << endl;
@@ -787,11 +755,16 @@ cout<<WZTree->trig_eff_Weight<<endl;      }
   std::cout<<"(0) all events:        "<<cutEff[0]<<"\t:\t"<<((float)cutEff[0]*100.0)/(float)cutEff[0]<<std::endl
 	  <<"(1) Gen Events:        "<<cutEff[1]<<"\t:\t"<<((float)cutEff[1]*100.0)/(float)cutEff[0]<<std::endl
 	  <<"(2) Exactly 3 muon:  "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
-	  <<"(3) effective muon:      "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
-	 // <<"(4) JEt selected:               "<<cutEff[10]<<"\t:\t"<<((float)cutEff[10]*100.0)/(float)cutEff[9]<<std::endl;
-	  //<<"(12) ZeppenCut:                       "<<cutEff[12]<<"\t:\t"<<((float)cutEff[12]*100.)/(float)cutEff[11]<<std::endl;
-	  <<"(13) Events passed all cuts:                       "<<cutEff[13]<<"\t:\t"<<((float)cutEff[13]*100.)/(float)cutEff[12]<<std::endl;
-  //std::cout << "Yield =  " << cutEff[9]*0.00128*WZTree->totalEventWeight<<endl;
+	  <<"(3) charges of all muon not same:      "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
+	  <<"(4) two muon from Z:               "<<cutEff[4]<<"\t:\t"<<((float)cutEff[4]*100.0)/(float)cutEff[3]<<std::endl
+	  <<"(5) 3rd muon from W:               "<<cutEff[5]<<"\t:\t"<<((float)cutEff[5]*100.0)/(float)cutEff[4]<<std::endl
+	  <<"(6) Dilepton-Zmass:  "<<cutEff[6]<<"\t:\t"<<((float)cutEff[6]*100.0)/(float)cutEff[5]<<std::endl
+	  <<"(7) MET:               "<<cutEff[7]<<"\t:\t"<<((float)cutEff[7]*100.0)/(float)cutEff[6]<<std::endl
+	  <<"(8) >=2 good VBF jets: "<<cutEff[8]<<"\t:\t"<<((float)cutEff[8]*100.0)/(float)cutEff[7]<<std::endl
+	  <<"(9) two Highest pt VBF jets with mjj>500     : "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.0)/(float)cutEff[8]<<std::endl
+	  <<"(10) Events with VBFjets delta eta>2.5  "<<cutEff[10]<<"\t:\t"<<((float)cutEff[10]*100.)/(float)cutEff[9]<<std::endl
+	  <<"(11) =2 VBF jets   : "<<cutEff[11]<<"\t:\t"<<((float)cutEff[11]*100.)/(float)cutEff[10]<<std::endl
+	  <<"(12) Trigger & Events passed all cuts:                       "<<cutEff[12]<<"\t:\t"<<((float)cutEff[12]*100.)/(float)cutEff[11]<<std::endl;
   //--------close everything-------------
   delete info; delete gen;
   delete genPartArr; delete electronArr; delete vertexArr;
