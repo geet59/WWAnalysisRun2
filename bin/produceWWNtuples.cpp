@@ -493,7 +493,7 @@ WZTree->id_eff_Weight3 = 1.;
       }//loop17 ends
 
       if(applyTrigger==1)
-	if(! triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits)) continue;
+	if(! (triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits) || triggerMenu.pass("HLT_DoubleEle24_22_eta2p1_WPLoose_Gsf_v*",info->triggerBits) || triggerMenu.pass("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*",info->triggerBits) || triggerMenu.pass("HLT_Ele30_WPTight_Gsf_v*",info->triggerBits) || triggerMenu.pass("HLT_Ele35_WPLoose_Gsf_v*",info->triggerBits) || triggerMenu.pass("HLT_Ele25_eta2p1_WPTight_Gsf_v*",info->triggerBits) || triggerMenu.pass("HLT_Ele27_eta2p1_WPLoose_Gsf_v*",info->triggerBits) || triggerMenu.pass("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*",info->triggerBits) || triggerMenu.pass("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*",info->triggerBits) || triggerMenu.pass("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*",info->triggerBits) || triggerMenu.pass("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*",info->triggerBits) || triggerMenu.pass("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*",info->triggerBits) || triggerMenu.pass("HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*",info->triggerBits) || triggerMenu.pass("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*",info->triggerBits)|| triggerMenu.pass("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v*",info->triggerBits) || triggerMenu.pass("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*",info->triggerBits) || triggerMenu.pass("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*",info->triggerBits)) )continue;
 
       /////////////////THE SELECTED LEPTON
       int nTightEle=0, nLooseEle=0;
